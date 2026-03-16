@@ -1,0 +1,96 @@
+{
+  "projects": [
+    {
+      "id": 1,
+      "title": "Sample Project 1",
+      "description": "Branding and packaging design project",
+      "category": "Branding",
+      "date": "2024-01-15",
+      "image": "/placeholder.jpg",
+      "skills": ["Adobe Illustrator", "Branding", "Packaging Design"]
+    }
+  ],
+  "achievements": [
+    {
+      "id": 1,
+      "title": "Design Award",
+      "description": "Won Design Excellence Award from Taylor's University",
+      "date": "2023-06-20",
+      "type": "Award",
+      "issuer": "Taylor's University"
+    }
+  ],
+  "skills": [
+    {
+      "id": 1,
+      "name": "React",
+      "category": "Programming",
+      "level": 85,
+      "logo": "https://cdn.simpleicons.org/react/61DAFB"
+    },
+    {
+      "id": 2,
+      "name": "JavaScript",
+      "category": "Programming",
+      "level": 90,
+      "logo": "https://cdn.simpleicons.org/javascript/F7DF1E"
+    },
+    {
+      "id": 3,
+      "name": "Java",
+      "category": "Programming",
+      "level": 80,
+      "logo": "https://cdn.simpleicons.org/java/007396"
+    },
+    {
+      "id": 4,
+      "name": "Python",
+      "category": "Programming",
+      "level": 85,
+      "logo": "https://cdn.simpleicons.org/python/3776AB"
+    },
+    {
+      "id": 5,
+      "name": "PHP",
+      "category": "Programming",
+      "level": 75,
+      "logo": "https://cdn.simpleicons.org/php/777BB4"
+    },
+    {
+      "id": 6,
+      "name": "SQL",
+      "category": "Database",
+      "level": 88,
+      "logo": "https://cdn.simpleicons.org/mysql/4479A3"
+    },
+    {
+      "id": 7,
+      "name": "SQLite",
+      "category": "Database",
+      "level": 82,
+      "logo": "https://cdn.simpleicons.org/sqlite/003B57"
+    },
+    {
+      "id": 8,
+      "name": "PostgreSQL",
+      "category": "Database",
+      "level": 85,
+      "logo": "https://cdn.simpleicons.org/postgresql/336791"
+    },
+    {
+      "id": 9,
+      "name": "Prisma",
+      "category": "Database",
+      "level": 80,
+      "logo": "https://cdn.simpleicons.org/prisma/2D3748"
+    },
+    {
+      "id": 10,
+      "name": "Adobe Photoshop",
+      "category": "Design",
+      "level": 90,
+      "logo": "https://cdn.simpleicons.org/adobephotoshop/31A8FF"
+    }
+  ]
+}
+

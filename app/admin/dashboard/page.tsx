@@ -1,0 +1,750 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
+interface Project {
+  id: number;
+  title: string;
+  description: string;
+  category: string;
+  date: string;
+  image?: string;
+  skills: string[];
+}
+
+interface Achievement {
+  id: number;
+  title: string;
+  description: string;
+  date: string;
+  type: string;
+  issuer: string;
+}
+
+interface Skill {
+  id: number;
+  name: string;
+  category: string;
+  level: number;
+  logo: string;
+}
+
+export default function AdminDashboard() {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [skills, setSkills] = useState<Skill[]>([]);
+  const [activeTab, setActiveTab] = useState<'projects' | 'achievements' | 'skills'>('projects');
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const router = useRouter();
+
+  const [projectForm, setProjectForm] = useState({
+    title: '',
+    description: '',
+    category: '',
+    date: new Date().toISOString().split('T')[0],
+    image: '',
+    skills: '',
+  });
+
+  const [achievementForm, setAchievementForm] = useState({
+    title: '',
+    description: '',
+    date: new Date().toISOString().split('T')[0],
+    type: '',
+    issuer: '',
+  });
+
+  const [skillForm, setSkillForm] = useState({
+    name: '',
+    category: 'Programming',
+    level: 80,
+    logo: '',
+  });
+
+  // Check auth and load data
+  useEffect(() => {
+    const token = localStorage.getItem('adminToken');
+    if (!token) {
+      router.push('/admin');
+      return;
+    }
+
+    loadData();
+  }, [router]);
+
+  const loadData = async () => {
+    try {
+      const response = await fetch('/api/portfolio');
+      const data = await response.json();
+      setProjects(data.projects);
+      setAchievements(data.achievements);
+      setSkills(data.skills || []);
+    } catch (error) {
+      console.error('Failed to load data:', error);
+    }
+  };
+
+  const handleAddProject = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!projectForm.title || !projectForm.description) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/portfolio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'project',
+          item: {
+            title: projectForm.title,
+            description: projectForm.description,
+            category: projectForm.category,
+            date: projectForm.date,
+            image: projectForm.image,
+            skills: projectForm.skills.split(',').map((s) => s.trim()),
+          },
+        }),
+      });
+
+      if (response.ok) {
+        loadData();
+        setProjectForm({
+          title: '',
+          description: '',
+          category: '',
+          date: new Date().toISOString().split('T')[0],
+          image: '',
+          skills: '',
+        });
+      }
+    } catch (error) {
+      alert('Failed to add project');
+    }
+  };
+
+  const handleAddAchievement = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!achievementForm.title || !achievementForm.description) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/portfolio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'achievement',
+          item: {
+            title: achievementForm.title,
+            description: achievementForm.description,
+            date: achievementForm.date,
+            type: achievementForm.type,
+            issuer: achievementForm.issuer,
+          },
+        }),
+      });
+
+      if (response.ok) {
+        loadData();
+        setAchievementForm({
+          title: '',
+          description: '',
+          date: new Date().toISOString().split('T')[0],
+          type: '',
+          issuer: '',
+        });
+      }
+    } catch (error) {
+      alert('Failed to add achievement');
+    }
+  };
+
+  const handleDeleteProject = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this project?')) return;
+
+    try {
+      const response = await fetch(`/api/portfolio?type=project&id=${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        loadData();
+      }
+    } catch (error) {
+      alert('Failed to delete project');
+    }
+  };
+
+  const handleDeleteAchievement = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this achievement?')) return;
+
+    try {
+      const response = await fetch(`/api/portfolio?type=achievement&id=${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        loadData();
+      }
+    } catch (error) {
+      alert('Failed to delete achievement');
+    }
+  };
+
+  const handleAddSkill = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!skillForm.name || !skillForm.category) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/portfolio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'skill',
+          item: {
+            name: skillForm.name,
+            category: skillForm.category,
+            level: skillForm.level,
+            logo: skillForm.logo,
+          },
+        }),
+      });
+
+      if (response.ok) {
+        loadData();
+        setSkillForm({
+          name: '',
+          category: 'Programming',
+          level: 80,
+          logo: '',
+        });
+      }
+    } catch (error) {
+      alert('Failed to add skill');
+    }
+  };
+
+  const handleDeleteSkill = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this skill?')) return;
+
+    try {
+      const response = await fetch(`/api/portfolio?type=skill&id=${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        loadData();
+      }
+    } catch (error) {
+      alert('Failed to delete skill');
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('adminToken');
+    router.push('/admin');
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      {/* Header */}
+      <div className="bg-white shadow">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Tabs */}
+        <div className="flex gap-4 mb-8">
+          <button
+            onClick={() => setActiveTab('projects')}
+            className={`px-6 py-2 rounded-lg font-medium ${
+              activeTab === 'projects'
+                ? 'bg-teal-600 text-white'
+                : 'bg-white text-gray-700 border border-gray-300'
+            }`}
+          >
+            Portfolio Projects
+          </button>
+          <button
+            onClick={() => setActiveTab('achievements')}
+            className={`px-6 py-2 rounded-lg font-medium ${
+              activeTab === 'achievements'
+                ? 'bg-teal-600 text-white'
+                : 'bg-white text-gray-700 border border-gray-300'
+            }`}
+          >
+            Achievements
+          </button>
+          <button
+            onClick={() => setActiveTab('skills')}
+            className={`px-6 py-2 rounded-lg font-medium ${
+              activeTab === 'skills'
+                ? 'bg-teal-600 text-white'
+                : 'bg-white text-gray-700 border border-gray-300'
+            }`}
+          >
+            Technical Skills
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Form */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-xl font-bold mb-4 text-gray-900">
+                {activeTab === 'projects'
+                  ? 'Add New Project'
+                  : activeTab === 'achievements'
+                  ? 'Add New Achievement'
+                  : 'Add New Skill'}
+              </h2>
+
+              {activeTab === 'projects' ? (
+                <form onSubmit={handleAddProject} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Project Title *
+                    </label>
+                    <input
+                      type="text"
+                      value={projectForm.title}
+                      onChange={(e) =>
+                        setProjectForm({ ...projectForm, title: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600"
+                      placeholder="e.g., Logo Design for Brand X"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Description *
+                    </label>
+                    <textarea
+                      value={projectForm.description}
+                      onChange={(e) =>
+                        setProjectForm({ ...projectForm, description: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600 h-24"
+                      placeholder="Describe your project..."
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Category
+                    </label>
+                    <input
+                      type="text"
+                      value={projectForm.category}
+                      onChange={(e) =>
+                        setProjectForm({ ...projectForm, category: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600"
+                      placeholder="e.g., Branding, Packaging"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Date
+                    </label>
+                    <input
+                      type="date"
+                      value={projectForm.date}
+                      onChange={(e) =>
+                        setProjectForm({ ...projectForm, date: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Skills (comma separated)
+                    </label>
+                    <input
+                      type="text"
+                      value={projectForm.skills}
+                      onChange={(e) =>
+                        setProjectForm({ ...projectForm, skills: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600"
+                      placeholder="e.g., Adobe Illustrator, Branding"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Image URL
+                    </label>
+                    <input
+                      type="text"
+                      value={projectForm.image}
+                      onChange={(e) =>
+                        setProjectForm({ ...projectForm, image: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600"
+                      placeholder="/images/project.jpg"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full bg-teal-600 text-white py-2 rounded-lg font-medium hover:bg-teal-700"
+                  >
+                    Add Project
+                  </button>
+                </form>
+              ) : activeTab === 'achievements' ? (
+                <form onSubmit={handleAddAchievement} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Achievement Title *
+                    </label>
+                    <input
+                      type="text"
+                      value={achievementForm.title}
+                      onChange={(e) =>
+                        setAchievementForm({
+                          ...achievementForm,
+                          title: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600"
+                      placeholder="e.g., Best Design Award"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Description *
+                    </label>
+                    <textarea
+                      value={achievementForm.description}
+                      onChange={(e) =>
+                        setAchievementForm({
+                          ...achievementForm,
+                          description: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600 h-24"
+                      placeholder="Describe your achievement..."
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Type
+                    </label>
+                    <input
+                      type="text"
+                      value={achievementForm.type}
+                      onChange={(e) =>
+                        setAchievementForm({
+                          ...achievementForm,
+                          type: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600"
+                      placeholder="e.g., Award, Certification"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Issuer
+                    </label>
+                    <input
+                      type="text"
+                      value={achievementForm.issuer}
+                      onChange={(e) =>
+                        setAchievementForm({
+                          ...achievementForm,
+                          issuer: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600"
+                      placeholder="e.g., Taylor's University"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Date
+                    </label>
+                    <input
+                      type="date"
+                      value={achievementForm.date}
+                      onChange={(e) =>
+                        setAchievementForm({
+                          ...achievementForm,
+                          date: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full bg-teal-600 text-white py-2 rounded-lg font-medium hover:bg-teal-700"
+                  >
+                    Add Achievement
+                  </button>
+                </form>
+              ) : (
+                <form onSubmit={handleAddSkill} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Skill Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={skillForm.name}
+                      onChange={(e) =>
+                        setSkillForm({
+                          ...skillForm,
+                          name: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600"
+                      placeholder="e.g., React, Python, PostgreSQL"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Category *
+                    </label>
+                    <select
+                      value={skillForm.category}
+                      onChange={(e) =>
+                        setSkillForm({
+                          ...skillForm,
+                          category: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600"
+                    >
+                      <option>Programming</option>
+                      <option>Database</option>
+                      <option>Design</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Proficiency Level: {skillForm.level}%
+                    </label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      step="5"
+                      value={skillForm.level}
+                      onChange={(e) =>
+                        setSkillForm({
+                          ...skillForm,
+                          level: parseInt(e.target.value),
+                        })
+                      }
+                      className="w-full"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Logo URL
+                    </label>
+                    <input
+                      type="text"
+                      value={skillForm.logo}
+                      onChange={(e) =>
+                        setSkillForm({
+                          ...skillForm,
+                          logo: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600"
+                      placeholder="https://cdn.simpleicons.org/react/61DAFB"
+                    />
+                  </div>
+
+                  <div className="p-3 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800">
+                    <p className="font-medium mb-2">Logo suggestions:</p>
+                    <p>React: https://cdn.simpleicons.org/react/61DAFB</p>
+                    <p>JavaScript: https://cdn.simpleicons.org/javascript/F7DF1E</p>
+                    <p>PostgreSQL: https://cdn.simpleicons.org/postgresql/336791</p>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full bg-teal-600 text-white py-2 rounded-lg font-medium hover:bg-teal-700"
+                  >
+                    Add Skill
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+
+          {/* List */}
+          <div className="lg:col-span-2">
+            <div className="space-y-4">
+              {activeTab === 'projects' ? (
+                projects.length > 0 ? (
+                  projects.map((project) => (
+                    <div key={project.id} className="bg-white rounded-lg shadow p-4">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <h3 className="font-bold text-gray-900">{project.title}</h3>
+                          <p className="text-sm text-gray-600 mt-1">
+                            {project.description}
+                          </p>
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {project.skills.map((skill, idx) => (
+                              <span
+                                key={idx}
+                                className="text-xs bg-teal-100 text-teal-700 px-2 py-1 rounded"
+                              >
+                                {skill}
+                              </span>
+                            ))}
+                          </div>
+                          <p className="text-xs text-gray-500 mt-2">
+                            {new Date(project.date).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => handleDeleteProject(project.id)}
+                          className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="bg-white rounded-lg shadow p-4 text-center text-gray-500">
+                    No projects yet. Add one using the form!
+                  </div>
+                )
+              ) : activeTab === 'achievements' ? (
+                achievements.length > 0 ? (
+                  achievements.map((achievement) => (
+                    <div key={achievement.id} className="bg-white rounded-lg shadow p-4">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <h3 className="font-bold text-gray-900">
+                            {achievement.title}
+                          </h3>
+                          <p className="text-sm text-gray-600 mt-1">
+                            {achievement.description}
+                          </p>
+                          <p className="text-xs text-teal-600 mt-2">
+                            {achievement.type} • {achievement.issuer}
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            {new Date(achievement.date).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => handleDeleteAchievement(achievement.id)}
+                          className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="bg-white rounded-lg shadow p-4 text-center text-gray-500">
+                    No achievements yet. Add one using the form!
+                  </div>
+                )
+              ) : (
+                skills.length > 0 ? (
+                  <div className="space-y-4">
+                    {['Programming', 'Database', 'Design', 'Other'].map((category) => {
+                      const categorySkills = skills.filter(
+                        (s) => s.category === category
+                      );
+                      if (categorySkills.length === 0) return null;
+
+                      return (
+                        <div key={category}>
+                          <h3 className="font-bold text-lg text-gray-900 mb-3 text-teal-600">
+                            {category}
+                          </h3>
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6 pb-6 border-b">
+                            {categorySkills.map((skill) => (
+                              <div
+                                key={skill.id}
+                                className="bg-gray-50 rounded-lg p-4 hover:shadow-md transition"
+                              >
+                                <div className="flex items-center gap-3 mb-2">
+                                  {skill.logo && (
+                                    <img
+                                      src={skill.logo}
+                                      alt={skill.name}
+                                      className="w-6 h-6 object-contain"
+                                    />
+                                  )}
+                                  <span className="font-medium text-gray-900 text-sm">
+                                    {skill.name}
+                                  </span>
+                                </div>
+                                <div className="w-full bg-gray-300 rounded-full h-2 mb-3">
+                                  <div
+                                    className="bg-teal-600 h-2 rounded-full"
+                                    style={{ width: `${skill.level}%` }}
+                                  ></div>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-xs text-gray-600">
+                                    {skill.level}%
+                                  </span>
+                                  <button
+                                    onClick={() => handleDeleteSkill(skill.id)}
+                                    className="px-2 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700"
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="bg-white rounded-lg shadow p-4 text-center text-gray-500">
+                    No skills yet. Add one using the form!
+                  </div>
+                )
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
