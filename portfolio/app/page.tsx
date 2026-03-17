@@ -41,11 +41,18 @@ interface Skill {
   logo: string;
 }
 
+interface Language {
+  id: number;
+  name: string;
+  proficiency: string;
+}
+
 export default function Home() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [skills, setSkills] = useState<Skill[]>([]);
+  const [languages, setLanguages] = useState<Language[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -62,6 +69,7 @@ export default function Home() {
         setProjects(portfolioData.projects);
         setAchievements(portfolioData.achievements);
         setSkills(portfolioData.skills || []);
+        setLanguages(portfolioData.languages || []);
         setProfile(profileData);
       } catch (error) {
         console.error('Failed to load portfolio data:', error);
@@ -217,18 +225,29 @@ export default function Home() {
           <div>
             <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-gray-900">Languages</h2>
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 border border-gray-300 rounded-full">
-                <span className="font-medium text-gray-900">Mandarin</span>
-                <span className="text-teal-600 text-sm">Native</span>
-              </div>
-              <div className="flex items-center justify-between p-3 border border-gray-300 rounded-full">
-                <span className="font-medium text-gray-900">English</span>
-                <span className="text-teal-600 text-sm">IELTS Band 8.0</span>
-              </div>
-              <div className="flex items-center justify-between p-3 border border-gray-300 rounded-full">
-                <span className="font-medium text-gray-900">Malay</span>
-                <span className="text-teal-600 text-sm">Basic</span>
-              </div>
+              {!loading && languages.length > 0 ? (
+                languages.map((language) => (
+                  <div key={language.id} className="flex items-center justify-between p-3 border border-gray-300 rounded-full">
+                    <span className="font-medium text-gray-900">{language.name}</span>
+                    <span className="text-teal-600 text-sm">{language.proficiency}</span>
+                  </div>
+                ))
+              ) : (
+                <>
+                  <div className="flex items-center justify-between p-3 border border-gray-300 rounded-full">
+                    <span className="font-medium text-gray-900">Mandarin</span>
+                    <span className="text-teal-600 text-sm">Native</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 border border-gray-300 rounded-full">
+                    <span className="font-medium text-gray-900">English</span>
+                    <span className="text-teal-600 text-sm">IELTS Band 8.0</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 border border-gray-300 rounded-full">
+                    <span className="font-medium text-gray-900">Malay</span>
+                    <span className="text-teal-600 text-sm">Basic</span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
