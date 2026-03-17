@@ -114,6 +114,16 @@ export async function POST(request: NextRequest) {
         .from('educations')
         .insert([item])
         .select();
+    } else if (type === 'core_skill') {
+      result = await supabaseAdmin
+        .from('core_skills')
+        .insert([item])
+        .select();
+    } else if (type === 'soft_skill') {
+      result = await supabaseAdmin
+        .from('soft_skills')
+        .insert([item])
+        .select();
     } else {
       return NextResponse.json(
         { error: 'Invalid type' },
@@ -130,12 +140,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Fetch all data to return
-    const [projectsRes, achievementsRes, skillsRes, languagesRes, educationsRes] = await Promise.all([
+    const [projectsRes, achievementsRes, skillsRes, languagesRes, educationsRes, coreSkillsRes, softSkillsRes] = await Promise.all([
       supabaseAdmin.from('projects').select('*'),
       supabaseAdmin.from('achievements').select('*'),
       supabaseAdmin.from('skills').select('*'),
       supabaseAdmin.from('languages').select('*'),
       supabaseAdmin.from('educations').select('*'),
+      supabaseAdmin.from('core_skills').select('*'),
+      supabaseAdmin.from('soft_skills').select('*'),
     ]);
 
     return NextResponse.json({
@@ -146,6 +158,8 @@ export async function POST(request: NextRequest) {
         skills: skillsRes.data || [],
         languages: languagesRes.data || [],
         educations: educationsRes.data || [],
+        coreSkills: coreSkillsRes.data || [],
+        softSkills: softSkillsRes.data || [],
       },
     });
   } catch (error: any) {
@@ -208,6 +222,18 @@ export async function PUT(request: NextRequest) {
         .update(item)
         .eq('id', id)
         .select();
+    } else if (type === 'core_skill') {
+      result = await supabaseAdmin
+        .from('core_skills')
+        .update(item)
+        .eq('id', id)
+        .select();
+    } else if (type === 'soft_skill') {
+      result = await supabaseAdmin
+        .from('soft_skills')
+        .update(item)
+        .eq('id', id)
+        .select();
     } else {
       return NextResponse.json(
         { error: 'Invalid type' },
@@ -220,12 +246,14 @@ export async function PUT(request: NextRequest) {
     }
 
     // Fetch all data to return
-    const [projectsRes, achievementsRes, skillsRes, languagesRes, educationsRes] = await Promise.all([
+    const [projectsRes, achievementsRes, skillsRes, languagesRes, educationsRes, coreSkillsRes, softSkillsRes] = await Promise.all([
       supabaseAdmin.from('projects').select('*'),
       supabaseAdmin.from('achievements').select('*'),
       supabaseAdmin.from('skills').select('*'),
       supabaseAdmin.from('languages').select('*'),
       supabaseAdmin.from('educations').select('*'),
+      supabaseAdmin.from('core_skills').select('*'),
+      supabaseAdmin.from('soft_skills').select('*'),
     ]);
 
     return NextResponse.json({
@@ -236,6 +264,8 @@ export async function PUT(request: NextRequest) {
         skills: skillsRes.data || [],
         languages: languagesRes.data || [],
         educations: educationsRes.data || [],
+        coreSkills: coreSkillsRes.data || [],
+        softSkills: softSkillsRes.data || [],
       },
     });
   } catch (error) {
@@ -276,6 +306,10 @@ export async function DELETE(request: NextRequest) {
       result = await supabaseAdmin.from('languages').delete().eq('id', id);
     } else if (type === 'education') {
       result = await supabaseAdmin.from('educations').delete().eq('id', id);
+    } else if (type === 'core_skill') {
+      result = await supabaseAdmin.from('core_skills').delete().eq('id', id);
+    } else if (type === 'soft_skill') {
+      result = await supabaseAdmin.from('soft_skills').delete().eq('id', id);
     } else {
       return NextResponse.json(
         { error: 'Invalid type' },
@@ -288,12 +322,14 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Fetch all data to return
-    const [projectsRes, achievementsRes, skillsRes, languagesRes, educationsRes] = await Promise.all([
+    const [projectsRes, achievementsRes, skillsRes, languagesRes, educationsRes, coreSkillsRes, softSkillsRes] = await Promise.all([
       supabaseAdmin.from('projects').select('*'),
       supabaseAdmin.from('achievements').select('*'),
       supabaseAdmin.from('skills').select('*'),
       supabaseAdmin.from('languages').select('*'),
       supabaseAdmin.from('educations').select('*'),
+      supabaseAdmin.from('core_skills').select('*'),
+      supabaseAdmin.from('soft_skills').select('*'),
     ]);
 
     return NextResponse.json({
@@ -304,6 +340,8 @@ export async function DELETE(request: NextRequest) {
         skills: skillsRes.data || [],
         languages: languagesRes.data || [],
         educations: educationsRes.data || [],
+        coreSkills: coreSkillsRes.data || [],
+        softSkills: softSkillsRes.data || [],
       },
     });
   } catch (error) {

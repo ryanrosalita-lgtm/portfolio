@@ -45,13 +45,29 @@ interface Education {
   endYear: string;
 }
 
+interface CoreSkill {
+  id: number;
+  skill: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+interface SoftSkill {
+  id: number;
+  skill: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export default function AdminDashboard() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [skills, setSkills] = useState<Skill[]>([]);
   const [languages, setLanguages] = useState<Language[]>([]);
   const [educations, setEducations] = useState<Education[]>([]);
-  const [activeTab, setActiveTab] = useState<'profile' | 'projects' | 'achievements' | 'skills' | 'languages' | 'educations'>('profile');
+  const [coreSkills, setCoreSkills] = useState<CoreSkill[]>([]);
+  const [softSkills, setSoftSkills] = useState<SoftSkill[]>([]);
+  const [activeTab, setActiveTab] = useState<'profile' | 'projects' | 'achievements' | 'skills' | 'languages' | 'educations' | 'core_skills' | 'soft_skills'>('profile');
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editingType, setEditingType] = useState<string | null>(null);
   const router = useRouter();
@@ -103,6 +119,14 @@ export default function AdminDashboard() {
     endYear: new Date().getFullYear().toString(),
   });
 
+  const [coreSkillForm, setCoreSkillForm] = useState({
+    skill: '',
+  });
+
+  const [softSkillForm, setSoftSkillForm] = useState({
+    skill: '',
+  });
+
   const [uploading, setUploading] = useState(false);
 
   // Check auth and load data
@@ -134,6 +158,8 @@ export default function AdminDashboard() {
       setSkills(portfolioData.skills || []);
       setLanguages(portfolioData.languages || []);
       setEducations(portfolioData.educations || []);
+      setCoreSkills(portfolioData.coreSkills || []);
+      setSoftSkills(portfolioData.softSkills || []);
       setProfileForm(profileData);
     } catch (error) {
       console.error('Failed to load data:', error);
@@ -707,6 +733,162 @@ export default function AdminDashboard() {
     setEditingType('education');
   };
 
+  const handleAddCoreSkill = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!coreSkillForm.skill) {
+      alert('Please enter a skill');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('authToken');
+      const method = editingId ? 'PUT' : 'POST';
+      const response = await fetch('/api/portfolio', {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          type: 'core_skill',
+          id: editingId,
+          item: {
+            skill: coreSkillForm.skill,
+          },
+        }),
+      });
+
+      if (response.ok) {
+        loadData();
+        setCoreSkillForm({ skill: '' });
+        setEditingId(null);
+        setEditingType(null);
+        alert(editingId ? 'Core skill updated successfully!' : 'Core skill added successfully!');
+      } else if (response.status === 401) {
+        alert('Session expired. Please login again.');
+        localStorage.removeItem('authToken');
+        router.push('/admin');
+      } else {
+        const errorData = await response.json();
+        alert(editingId ? `Failed to update core skill: ${errorData?.error}` : `Failed to add core skill: ${errorData?.error}`);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert(editingId ? 'Failed to update core skill' : 'Failed to add core skill');
+    }
+  };
+
+  const handleDeleteCoreSkill = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this core skill?')) return;
+
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`/api/portfolio?type=core_skill&id=${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        loadData();
+      } else if (response.status === 401) {
+        alert('Session expired. Please login again.');
+        localStorage.removeItem('authToken');
+        router.push('/admin');
+      } else {
+        alert('Failed to delete core skill');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to delete core skill');
+    }
+  };
+
+  const handleEditCoreSkill = (coreSkill: CoreSkill) => {
+    setCoreSkillForm({ skill: coreSkill.skill });
+    setEditingId(coreSkill.id);
+    setEditingType('core_skill');
+  };
+
+  const handleAddSoftSkill = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!softSkillForm.skill) {
+      alert('Please enter a skill');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('authToken');
+      const method = editingId ? 'PUT' : 'POST';
+      const response = await fetch('/api/portfolio', {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          type: 'soft_skill',
+          id: editingId,
+          item: {
+            skill: softSkillForm.skill,
+          },
+        }),
+      });
+
+      if (response.ok) {
+        loadData();
+        setSoftSkillForm({ skill: '' });
+        setEditingId(null);
+        setEditingType(null);
+        alert(editingId ? 'Soft skill updated successfully!' : 'Soft skill added successfully!');
+      } else if (response.status === 401) {
+        alert('Session expired. Please login again.');
+        localStorage.removeItem('authToken');
+        router.push('/admin');
+      } else {
+        const errorData = await response.json();
+        alert(editingId ? `Failed to update soft skill: ${errorData?.error}` : `Failed to add soft skill: ${errorData?.error}`);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert(editingId ? 'Failed to update soft skill' : 'Failed to add soft skill');
+    }
+  };
+
+  const handleDeleteSoftSkill = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this soft skill?')) return;
+
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`/api/portfolio?type=soft_skill&id=${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        loadData();
+      } else if (response.status === 401) {
+        alert('Session expired. Please login again.');
+        localStorage.removeItem('authToken');
+        router.push('/admin');
+      } else {
+        alert('Failed to delete soft skill');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to delete soft skill');
+    }
+  };
+
+  const handleEditSoftSkill = (softSkill: SoftSkill) => {
+    setSoftSkillForm({ skill: softSkill.skill });
+    setEditingId(softSkill.id);
+    setEditingType('soft_skill');
+  };
+
   const handleCancelEdit = () => {
     setEditingId(null);
     setEditingType(null);
@@ -741,6 +923,12 @@ export default function AdminDashboard() {
       specialization: '',
       startYear: new Date().getFullYear().toString(),
       endYear: new Date().getFullYear().toString(),
+    });
+    setCoreSkillForm({
+      skill: '',
+    });
+    setSoftSkillForm({
+      skill: '',
     });
   };
 
@@ -827,6 +1015,26 @@ export default function AdminDashboard() {
           >
             Education
           </button>
+          <button
+            onClick={() => setActiveTab('core_skills')}
+            className={`px-4 py-2 rounded-lg font-medium text-sm ${
+              activeTab === 'core_skills'
+                ? 'bg-teal-600 text-white'
+                : 'bg-white text-gray-700 border border-gray-300'
+            }`}
+          >
+            Core Skills
+          </button>
+          <button
+            onClick={() => setActiveTab('soft_skills')}
+            className={`px-4 py-2 rounded-lg font-medium text-sm ${
+              activeTab === 'soft_skills'
+                ? 'bg-teal-600 text-white'
+                : 'bg-white text-gray-700 border border-gray-300'
+            }`}
+          >
+            Soft Skills
+          </button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -844,7 +1052,11 @@ export default function AdminDashboard() {
                   ? editingId ? 'Edit Skill' : 'Add New Skill'
                   : activeTab === 'languages'
                   ? editingId ? 'Edit Language' : 'Add New Language'
-                  : editingId ? 'Edit Education' : 'Add New Education'}
+                  : activeTab === 'educations'
+                  ? editingId ? 'Edit Education' : 'Add New Education'
+                  : activeTab === 'core_skills'
+                  ? editingId ? 'Edit Core Skill' : 'Add New Core Skill'
+                  : editingId ? 'Edit Soft Skill' : 'Add New Soft Skill'}
               </h2>
 
               {activeTab === 'profile' ? (
@@ -1461,6 +1673,76 @@ export default function AdminDashboard() {
                       className="flex-1 bg-teal-600 text-white py-2 rounded-lg font-medium hover:bg-teal-700"
                     >
                       {editingId ? 'Update Education' : 'Add Education'}
+                    </button>
+                    {editingId && (
+                      <button
+                        type="button"
+                        onClick={handleCancelEdit}
+                        className="flex-1 bg-gray-400 text-white py-2 rounded-lg font-medium hover:bg-gray-500"
+                      >
+                        Cancel
+                      </button>
+                    )}
+                  </div>
+                </form>
+              ) : activeTab === 'core_skills' ? (
+                <form onSubmit={handleAddCoreSkill} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-900 mb-1">
+                      Skill Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={coreSkillForm.skill}
+                      onChange={(e) =>
+                        setCoreSkillForm({ skill: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600 text-gray-900 placeholder-gray-500"
+                      placeholder="e.g., Problem Solving, Project Management"
+                    />
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button
+                      type="submit"
+                      className="flex-1 bg-teal-600 text-white py-2 rounded-lg font-medium hover:bg-teal-700"
+                    >
+                      {editingId ? 'Update Core Skill' : 'Add Core Skill'}
+                    </button>
+                    {editingId && (
+                      <button
+                        type="button"
+                        onClick={handleCancelEdit}
+                        className="flex-1 bg-gray-400 text-white py-2 rounded-lg font-medium hover:bg-gray-500"
+                      >
+                        Cancel
+                      </button>
+                    )}
+                  </div>
+                </form>
+              ) : activeTab === 'soft_skills' ? (
+                <form onSubmit={handleAddSoftSkill} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-900 mb-1">
+                      Skill Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={softSkillForm.skill}
+                      onChange={(e) =>
+                        setSoftSkillForm({ skill: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600 text-gray-900 placeholder-gray-500"
+                      placeholder="e.g., Communication, Teamwork, Leadership"
+                    />
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button
+                      type="submit"
+                      className="flex-1 bg-teal-600 text-white py-2 rounded-lg font-medium hover:bg-teal-700"
+                    >
+                      {editingId ? 'Update Soft Skill' : 'Add Soft Skill'}
                     </button>
                     {editingId && (
                       <button
