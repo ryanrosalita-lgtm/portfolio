@@ -13,6 +13,14 @@ export async function GET() {
       supabaseAdmin.from('educations').select('*'),
     ]);
 
+    // Debug logging
+    if (educationsRes.data) {
+      console.log('Supabase educations data:', educationsRes.data);
+    }
+    if (educationsRes.error) {
+      console.error('Supabase educations error:', educationsRes.error);
+    }
+
     // If Supabase fails, fallback to local JSON data
     if (projectsRes.error || achievementsRes.error || skillsRes.error || languagesRes.error || educationsRes.error) {
       console.warn('Supabase connection failed, using fallback data');

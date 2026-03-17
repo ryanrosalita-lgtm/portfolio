@@ -126,6 +126,9 @@ export default function AdminDashboard() {
       const portfolioData = await portfolioRes.json();
       const profileData = await profileRes.json();
 
+      console.log('Admin - API Response - Educations:', portfolioData.educations);
+      console.log('Admin - Data source:', portfolioData.source);
+
       setProjects(portfolioData.projects);
       setAchievements(portfolioData.achievements);
       setSkills(portfolioData.skills || []);
