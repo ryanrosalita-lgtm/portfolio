@@ -74,7 +74,7 @@ export default function AdminDashboard() {
 
   // Check auth and load data
   useEffect(() => {
-    const token = localStorage.getItem('adminToken');
+    const token = localStorage.getItem('authToken');
     if (!token) {
       router.push('/admin');
       return;
@@ -136,9 +136,13 @@ export default function AdminDashboard() {
     }
 
     try {
+      const token = localStorage.getItem('authToken');
       const response = await fetch('/api/portfolio', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
         body: JSON.stringify({
           type: 'project',
           item: {
@@ -162,8 +166,15 @@ export default function AdminDashboard() {
           image: '',
           skills: '',
         });
+      } else if (response.status === 401) {
+        alert('Session expired. Please login again.');
+        localStorage.removeItem('authToken');
+        router.push('/admin');
+      } else {
+        alert('Failed to add project');
       }
     } catch (error) {
+      console.error('Error:', error);
       alert('Failed to add project');
     }
   };
@@ -176,9 +187,13 @@ export default function AdminDashboard() {
     }
 
     try {
+      const token = localStorage.getItem('authToken');
       const response = await fetch('/api/portfolio', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
         body: JSON.stringify({
           type: 'achievement',
           item: {
@@ -200,8 +215,15 @@ export default function AdminDashboard() {
           type: '',
           issuer: '',
         });
+      } else if (response.status === 401) {
+        alert('Session expired. Please login again.');
+        localStorage.removeItem('authToken');
+        router.push('/admin');
+      } else {
+        alert('Failed to add achievement');
       }
     } catch (error) {
+      console.error('Error:', error);
       alert('Failed to add achievement');
     }
   };
@@ -210,14 +232,25 @@ export default function AdminDashboard() {
     if (!confirm('Are you sure you want to delete this project?')) return;
 
     try {
+      const token = localStorage.getItem('authToken');
       const response = await fetch(`/api/portfolio?type=project&id=${id}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
       });
 
       if (response.ok) {
         loadData();
+      } else if (response.status === 401) {
+        alert('Session expired. Please login again.');
+        localStorage.removeItem('authToken');
+        router.push('/admin');
+      } else {
+        alert('Failed to delete project');
       }
     } catch (error) {
+      console.error('Error:', error);
       alert('Failed to delete project');
     }
   };
@@ -226,14 +259,25 @@ export default function AdminDashboard() {
     if (!confirm('Are you sure you want to delete this achievement?')) return;
 
     try {
+      const token = localStorage.getItem('authToken');
       const response = await fetch(`/api/portfolio?type=achievement&id=${id}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
       });
 
       if (response.ok) {
         loadData();
+      } else if (response.status === 401) {
+        alert('Session expired. Please login again.');
+        localStorage.removeItem('authToken');
+        router.push('/admin');
+      } else {
+        alert('Failed to delete achievement');
       }
     } catch (error) {
+      console.error('Error:', error);
       alert('Failed to delete achievement');
     }
   };
@@ -246,9 +290,13 @@ export default function AdminDashboard() {
     }
 
     try {
+      const token = localStorage.getItem('authToken');
       const response = await fetch('/api/portfolio', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
         body: JSON.stringify({
           type: 'skill',
           item: {
@@ -268,8 +316,15 @@ export default function AdminDashboard() {
           level: 80,
           logo: '',
         });
+      } else if (response.status === 401) {
+        alert('Session expired. Please login again.');
+        localStorage.removeItem('authToken');
+        router.push('/admin');
+      } else {
+        alert('Failed to add skill');
       }
     } catch (error) {
+      console.error('Error:', error);
       alert('Failed to add skill');
     }
   };
@@ -278,20 +333,31 @@ export default function AdminDashboard() {
     if (!confirm('Are you sure you want to delete this skill?')) return;
 
     try {
+      const token = localStorage.getItem('authToken');
       const response = await fetch(`/api/portfolio?type=skill&id=${id}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
       });
 
       if (response.ok) {
         loadData();
+      } else if (response.status === 401) {
+        alert('Session expired. Please login again.');
+        localStorage.removeItem('authToken');
+        router.push('/admin');
+      } else {
+        alert('Failed to delete skill');
       }
     } catch (error) {
+      console.error('Error:', error);
       alert('Failed to delete skill');
     }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('adminToken');
+    localStorage.removeItem('authToken');
     router.push('/admin');
   };
 

@@ -1,6 +1,7 @@
 import { supabaseAdmin } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
 import portfolioData from '@/data/portfolio.json';
+import { authenticateRequest, unauthorizedResponse } from '@/lib/auth';
 
 export async function GET() {
   try {
@@ -45,8 +46,22 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    // Authenticate request
+    const auth = authenticateRequest(request);
+    if (!auth) {
+      return unauthorizedResponse();
+    }
+
     const body = await request.json();
     const { type, item } = body;
+
+    // Validate input
+    if (!type || !item) {
+      return NextResponse.json(
+        { error: 'Type and item are required' },
+        { status: 400 }
+      );
+    }
 
     let result;
 
@@ -65,6 +80,11 @@ export async function POST(request: NextRequest) {
         .from('skills')
         .insert([item])
         .select();
+    } else {
+      return NextResponse.json(
+        { error: 'Invalid type' },
+        { status: 400 }
+      );
     }
 
     if (result?.error) {
@@ -94,8 +114,22 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
+    // Authenticate request
+    const auth = authenticateRequest(request);
+    if (!auth) {
+      return unauthorizedResponse();
+    }
+
     const body = await request.json();
     const { type, id, item } = body;
+
+    // Validate input
+    if (!type || !id || !item) {
+      return NextResponse.json(
+        { error: 'Type, id, and item are required' },
+        { status: 400 }
+      );
+    }
 
     let result;
 
@@ -117,6 +151,11 @@ export async function PUT(request: NextRequest) {
         .update(item)
         .eq('id', id)
         .select();
+    } else {
+      return NextResponse.json(
+        { error: 'Invalid type' },
+        { status: 400 }
+      );
     }
 
     if (result?.error) {
@@ -146,9 +185,23 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    // Authenticate request
+    const auth = authenticateRequest(request);
+    if (!auth) {
+      return unauthorizedResponse();
+    }
+
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type');
     const id = parseInt(searchParams.get('id') || '0');
+
+    // Validate input
+    if (!type || !id) {
+      return NextResponse.json(
+        { error: 'Type and id are required' },
+        { status: 400 }
+      );
+    }
 
     let result;
 
@@ -158,6 +211,11 @@ export async function DELETE(request: NextRequest) {
       result = await supabaseAdmin.from('achievements').delete().eq('id', id);
     } else if (type === 'skill') {
       result = await supabaseAdmin.from('skills').delete().eq('id', id);
+    } else {
+      return NextResponse.json(
+        { error: 'Invalid type' },
+        { status: 400 }
+      );
     }
 
     if (result?.error) {
