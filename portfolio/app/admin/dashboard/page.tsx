@@ -53,6 +53,7 @@ export default function AdminDashboard() {
   const [educations, setEducations] = useState<Education[]>([]);
   const [activeTab, setActiveTab] = useState<'profile' | 'projects' | 'achievements' | 'skills' | 'languages' | 'educations'>('profile');
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingType, setEditingType] = useState<string | null>(null);
   const router = useRouter();
 
   const [profileForm, setProfileForm] = useState({
@@ -210,14 +211,16 @@ export default function AdminDashboard() {
 
     try {
       const token = localStorage.getItem('authToken');
+      const method = editingId ? 'PUT' : 'POST';
       const response = await fetch('/api/portfolio', {
-        method: 'POST',
+        method: method,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           type: 'project',
+          id: editingId,
           item: {
             title: projectForm.title,
             description: projectForm.description,
@@ -239,16 +242,20 @@ export default function AdminDashboard() {
           image: '',
           skills: '',
         });
+        setEditingId(null);
+        setEditingType(null);
+        alert(editingId ? 'Project updated successfully!' : 'Project added successfully!');
       } else if (response.status === 401) {
         alert('Session expired. Please login again.');
         localStorage.removeItem('authToken');
         router.push('/admin');
       } else {
-        alert('Failed to add project');
+        const errorData = await response.json();
+        alert(editingId ? `Failed to update project: ${errorData?.error}` : `Failed to add project: ${errorData?.error}`);
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Failed to add project');
+      alert(editingId ? 'Failed to update project' : 'Failed to add project');
     }
   };
 
@@ -261,14 +268,16 @@ export default function AdminDashboard() {
 
     try {
       const token = localStorage.getItem('authToken');
+      const method = editingId ? 'PUT' : 'POST';
       const response = await fetch('/api/portfolio', {
-        method: 'POST',
+        method: method,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           type: 'achievement',
+          id: editingId,
           item: {
             title: achievementForm.title,
             description: achievementForm.description,
@@ -288,16 +297,20 @@ export default function AdminDashboard() {
           type: '',
           issuer: '',
         });
+        setEditingId(null);
+        setEditingType(null);
+        alert(editingId ? 'Achievement updated successfully!' : 'Achievement added successfully!');
       } else if (response.status === 401) {
         alert('Session expired. Please login again.');
         localStorage.removeItem('authToken');
         router.push('/admin');
       } else {
-        alert('Failed to add achievement');
+        const errorData = await response.json();
+        alert(editingId ? `Failed to update achievement: ${errorData?.error}` : `Failed to add achievement: ${errorData?.error}`);
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Failed to add achievement');
+      alert(editingId ? 'Failed to update achievement' : 'Failed to add achievement');
     }
   };
 
@@ -364,14 +377,16 @@ export default function AdminDashboard() {
 
     try {
       const token = localStorage.getItem('authToken');
+      const method = editingId ? 'PUT' : 'POST';
       const response = await fetch('/api/portfolio', {
-        method: 'POST',
+        method: method,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           type: 'skill',
+          id: editingId,
           item: {
             name: skillForm.name,
             category: skillForm.category,
@@ -389,16 +404,20 @@ export default function AdminDashboard() {
           level: 80,
           logo: '',
         });
+        setEditingId(null);
+        setEditingType(null);
+        alert(editingId ? 'Skill updated successfully!' : 'Skill added successfully!');
       } else if (response.status === 401) {
         alert('Session expired. Please login again.');
         localStorage.removeItem('authToken');
         router.push('/admin');
       } else {
-        alert('Failed to add skill');
+        const errorData = await response.json();
+        alert(editingId ? `Failed to update skill: ${errorData?.error}` : `Failed to add skill: ${errorData?.error}`);
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Failed to add skill');
+      alert(editingId ? 'Failed to update skill' : 'Failed to add skill');
     }
   };
 
@@ -438,14 +457,16 @@ export default function AdminDashboard() {
 
     try {
       const token = localStorage.getItem('authToken');
+      const method = editingId ? 'PUT' : 'POST';
       const response = await fetch('/api/portfolio', {
-        method: 'POST',
+        method: method,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           type: 'language',
+          id: editingId,
           item: {
             name: languageForm.name,
             proficiency: languageForm.proficiency,
@@ -459,16 +480,20 @@ export default function AdminDashboard() {
           name: '',
           proficiency: 'Native',
         });
+        setEditingId(null);
+        setEditingType(null);
+        alert(editingId ? 'Language updated successfully!' : 'Language added successfully!');
       } else if (response.status === 401) {
         alert('Session expired. Please login again.');
         localStorage.removeItem('authToken');
         router.push('/admin');
       } else {
-        alert('Failed to add language');
+        const errorData = await response.json();
+        alert(editingId ? `Failed to update language: ${errorData?.error}` : `Failed to add language: ${errorData?.error}`);
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Failed to add language');
+      alert(editingId ? 'Failed to update language' : 'Failed to add language');
     }
   };
 
@@ -508,14 +533,16 @@ export default function AdminDashboard() {
 
     try {
       const token = localStorage.getItem('authToken');
+      const method = editingId ? 'PUT' : 'POST';
       const response = await fetch('/api/portfolio', {
-        method: 'POST',
+        method: method,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           type: 'education',
+          id: editingId,
           item: {
             institution: educationForm.institution,
             degree: educationForm.degree,
@@ -535,16 +562,21 @@ export default function AdminDashboard() {
           startYear: new Date().getFullYear().toString(),
           endYear: new Date().getFullYear().toString(),
         });
+        setEditingId(null);
+        setEditingType(null);
+        alert(editingId ? 'Education updated successfully!' : 'Education added successfully!');
       } else if (response.status === 401) {
         alert('Session expired. Please login again.');
         localStorage.removeItem('authToken');
         router.push('/admin');
       } else {
-        alert('Failed to add education');
+        const errorData = await response.json();
+        console.error('API Error:', errorData);
+        alert(editingId ? `Failed to update education: ${errorData?.error}` : `Failed to add education: ${errorData?.error || response.statusText}`);
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Failed to add education');
+      alert(editingId ? `Failed to update education: ${error instanceof Error ? error.message : 'Unknown error'}` : `Failed to add education: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
@@ -573,6 +605,101 @@ export default function AdminDashboard() {
       console.error('Error:', error);
       alert('Failed to delete education');
     }
+  };
+
+  // Edit handlers - populate forms for editing
+  const handleEditProject = (project: Project) => {
+    setProjectForm({
+      title: project.title,
+      description: project.description,
+      category: project.category,
+      date: project.date,
+      image: project.image || '',
+      skills: project.skills.join(', '),
+    });
+    setEditingId(project.id);
+    setEditingType('project');
+  };
+
+  const handleEditAchievement = (achievement: Achievement) => {
+    setAchievementForm({
+      title: achievement.title,
+      description: achievement.description,
+      date: achievement.date,
+      type: achievement.type,
+      issuer: achievement.issuer,
+    });
+    setEditingId(achievement.id);
+    setEditingType('achievement');
+  };
+
+  const handleEditSkill = (skill: Skill) => {
+    setSkillForm({
+      name: skill.name,
+      category: skill.category,
+      level: skill.level,
+      logo: skill.logo,
+    });
+    setEditingId(skill.id);
+    setEditingType('skill');
+  };
+
+  const handleEditLanguage = (language: Language) => {
+    setLanguageForm({
+      name: language.name,
+      proficiency: language.proficiency,
+    });
+    setEditingId(language.id);
+    setEditingType('language');
+  };
+
+  const handleEditEducation = (education: Education) => {
+    setEducationForm({
+      institution: education.institution,
+      degree: education.degree,
+      specialization: education.specialization,
+      startYear: education.startYear,
+      endYear: education.endYear,
+    });
+    setEditingId(education.id);
+    setEditingType('education');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditingType(null);
+    setProjectForm({
+      title: '',
+      description: '',
+      category: '',
+      date: new Date().toISOString().split('T')[0],
+      image: '',
+      skills: '',
+    });
+    setAchievementForm({
+      title: '',
+      description: '',
+      date: new Date().toISOString().split('T')[0],
+      type: '',
+      issuer: '',
+    });
+    setSkillForm({
+      name: '',
+      category: 'Programming',
+      level: 80,
+      logo: '',
+    });
+    setLanguageForm({
+      name: '',
+      proficiency: 'Native',
+    });
+    setEducationForm({
+      institution: '',
+      degree: '',
+      specialization: '',
+      startYear: new Date().getFullYear().toString(),
+      endYear: new Date().getFullYear().toString(),
+    });
   };
 
   const handleLogout = () => {
@@ -668,14 +795,14 @@ export default function AdminDashboard() {
                 {activeTab === 'profile'
                   ? 'Edit Profile'
                   : activeTab === 'projects'
-                  ? 'Add New Project'
+                  ? editingId ? 'Edit Project' : 'Add New Project'
                   : activeTab === 'achievements'
-                  ? 'Add New Achievement'
+                  ? editingId ? 'Edit Achievement' : 'Add New Achievement'
                   : activeTab === 'skills'
-                  ? 'Add New Skill'
+                  ? editingId ? 'Edit Skill' : 'Add New Skill'
                   : activeTab === 'languages'
-                  ? 'Add New Language'
-                  : 'Add New Education'}
+                  ? editingId ? 'Edit Language' : 'Add New Language'
+                  : editingId ? 'Edit Education' : 'Add New Education'}
               </h2>
 
               {activeTab === 'profile' ? (
@@ -901,12 +1028,23 @@ export default function AdminDashboard() {
                     />
                   </div>
 
-                  <button
-                    type="submit"
-                    className="w-full bg-teal-600 text-white py-2 rounded-lg font-medium hover:bg-teal-700"
-                  >
-                    Add Project
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      type="submit"
+                      className="flex-1 bg-teal-600 text-white py-2 rounded-lg font-medium hover:bg-teal-700"
+                    >
+                      {editingId ? 'Update Project' : 'Add Project'}
+                    </button>
+                    {editingId && (
+                      <button
+                        type="button"
+                        onClick={handleCancelEdit}
+                        className="flex-1 bg-gray-400 text-white py-2 rounded-lg font-medium hover:bg-gray-500"
+                      >
+                        Cancel
+                      </button>
+                    )}
+                  </div>
                 </form>
               ) : activeTab === 'achievements' ? (
                 <form onSubmit={handleAddAchievement} className="space-y-4">
@@ -998,12 +1136,23 @@ export default function AdminDashboard() {
                     />
                   </div>
 
-                  <button
-                    type="submit"
-                    className="w-full bg-teal-600 text-white py-2 rounded-lg font-medium hover:bg-teal-700"
-                  >
-                    Add Achievement
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      type="submit"
+                      className="flex-1 bg-teal-600 text-white py-2 rounded-lg font-medium hover:bg-teal-700"
+                    >
+                      {editingId ? 'Update Achievement' : 'Add Achievement'}
+                    </button>
+                    {editingId && (
+                      <button
+                        type="button"
+                        onClick={handleCancelEdit}
+                        className="flex-1 bg-gray-400 text-white py-2 rounded-lg font-medium hover:bg-gray-500"
+                      >
+                        Cancel
+                      </button>
+                    )}
+                  </div>
                 </form>
               ) : activeTab === 'skills' ? (
                 <form onSubmit={handleAddSkill} className="space-y-4">
@@ -1091,12 +1240,23 @@ export default function AdminDashboard() {
                     <p>PostgreSQL: https://cdn.simpleicons.org/postgresql/336791</p>
                   </div>
 
-                  <button
-                    type="submit"
-                    className="w-full bg-teal-600 text-white py-2 rounded-lg font-medium hover:bg-teal-700"
-                  >
-                    Add Skill
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      type="submit"
+                      className="flex-1 bg-teal-600 text-white py-2 rounded-lg font-medium hover:bg-teal-700"
+                    >
+                      {editingId ? 'Update Skill' : 'Add Skill'}
+                    </button>
+                    {editingId && (
+                      <button
+                        type="button"
+                        onClick={handleCancelEdit}
+                        className="flex-1 bg-gray-400 text-white py-2 rounded-lg font-medium hover:bg-gray-500"
+                      >
+                        Cancel
+                      </button>
+                    )}
+                  </div>
                 </form>
               ) : activeTab === 'languages' ? (
                 <form onSubmit={handleAddLanguage} className="space-y-4">
@@ -1133,12 +1293,23 @@ export default function AdminDashboard() {
                     </select>
                   </div>
 
-                  <button
-                    type="submit"
-                    className="w-full bg-teal-600 text-white py-2 rounded-lg font-medium hover:bg-teal-700"
-                  >
-                    Add Language
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      type="submit"
+                      className="flex-1 bg-teal-600 text-white py-2 rounded-lg font-medium hover:bg-teal-700"
+                    >
+                      {editingId ? 'Update Language' : 'Add Language'}
+                    </button>
+                    {editingId && (
+                      <button
+                        type="button"
+                        onClick={handleCancelEdit}
+                        className="flex-1 bg-gray-400 text-white py-2 rounded-lg font-medium hover:bg-gray-500"
+                      >
+                        Cancel
+                      </button>
+                    )}
+                  </div>
                 </form>
               ) : activeTab === 'educations' ? (
                 <form onSubmit={handleAddEducation} className="space-y-4">
@@ -1222,12 +1393,23 @@ export default function AdminDashboard() {
                     </div>
                   </div>
 
-                  <button
-                    type="submit"
-                    className="w-full bg-teal-600 text-white py-2 rounded-lg font-medium hover:bg-teal-700"
-                  >
-                    Add Education
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      type="submit"
+                      className="flex-1 bg-teal-600 text-white py-2 rounded-lg font-medium hover:bg-teal-700"
+                    >
+                      {editingId ? 'Update Education' : 'Add Education'}
+                    </button>
+                    {editingId && (
+                      <button
+                        type="button"
+                        onClick={handleCancelEdit}
+                        className="flex-1 bg-gray-400 text-white py-2 rounded-lg font-medium hover:bg-gray-500"
+                      >
+                        Cancel
+                      </button>
+                    )}
+                  </div>
                 </form>
               ) : null}
             </div>
@@ -1260,12 +1442,20 @@ export default function AdminDashboard() {
                             {new Date(project.date).toLocaleDateString()}
                           </p>
                         </div>
-                        <button
-                          onClick={() => handleDeleteProject(project.id)}
-                          className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
-                        >
-                          Delete
-                        </button>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleEditProject(project)}
+                            className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteProject(project.id)}
+                            className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))
@@ -1293,12 +1483,20 @@ export default function AdminDashboard() {
                             {new Date(achievement.date).toLocaleDateString()}
                           </p>
                         </div>
-                        <button
-                          onClick={() => handleDeleteAchievement(achievement.id)}
-                          className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
-                        >
-                          Delete
-                        </button>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleEditAchievement(achievement)}
+                            className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteAchievement(achievement.id)}
+                            className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))
@@ -1319,12 +1517,20 @@ export default function AdminDashboard() {
                               {language.proficiency}
                             </p>
                           </div>
-                          <button
-                            onClick={() => handleDeleteLanguage(language.id)}
-                            className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
-                          >
-                            Delete
-                          </button>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleEditLanguage(language)}
+                              className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteLanguage(language.id)}
+                              className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
+                            >
+                              Delete
+                            </button>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -1349,12 +1555,20 @@ export default function AdminDashboard() {
                               {education.startYear} - {education.endYear}
                             </p>
                           </div>
-                          <button
-                            onClick={() => handleDeleteEducation(education.id)}
-                            className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
-                          >
-                            Delete
-                          </button>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleEditEducation(education)}
+                              className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteEducation(education.id)}
+                              className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
+                            >
+                              Delete
+                            </button>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -1402,16 +1616,24 @@ export default function AdminDashboard() {
                                     style={{ width: `${skill.level}%` }}
                                   ></div>
                                 </div>
-                                <div className="flex justify-between items-center">
+                                <div className="flex justify-between items-center gap-1">
                                   <span className="text-xs text-gray-600">
                                     {skill.level}%
                                   </span>
-                                  <button
-                                    onClick={() => handleDeleteSkill(skill.id)}
-                                    className="px-2 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700"
-                                  >
-                                    Delete
-                                  </button>
+                                  <div className="flex gap-1">
+                                    <button
+                                      onClick={() => handleEditSkill(skill)}
+                                      className="px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700"
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      onClick={() => handleDeleteSkill(skill.id)}
+                                      className="px-2 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700"
+                                    >
+                                      Delete
+                                    </button>
+                                  </div>
                                 </div>
                               </div>
                             ))}

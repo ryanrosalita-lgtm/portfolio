@@ -14,11 +14,13 @@ export async function GET() {
     ]);
 
     // If Supabase fails, fallback to local JSON data
-    if (projectsRes.error || achievementsRes.error || skillsRes.error) {
+    if (projectsRes.error || achievementsRes.error || skillsRes.error || languagesRes.error || educationsRes.error) {
       console.warn('Supabase connection failed, using fallback data');
       console.error('Projects error:', projectsRes.error);
       console.error('Achievements error:', achievementsRes.error);
       console.error('Skills error:', skillsRes.error);
+      console.error('Languages error:', languagesRes.error);
+      console.error('Educations error:', educationsRes.error);
       
       return NextResponse.json({
         projects: portfolioData.projects || [],
@@ -104,7 +106,11 @@ export async function POST(request: NextRequest) {
     }
 
     if (result?.error) {
-      throw result.error;
+      console.error('Supabase insert error:', result.error);
+      return NextResponse.json(
+        { error: `Database error: ${result.error.message}` },
+        { status: 400 }
+      );
     }
 
     // Fetch all data to return
@@ -126,9 +132,12 @@ export async function POST(request: NextRequest) {
         educations: educationsRes.data || [],
       },
     });
-  } catch (error) {
-    console.error('Error:', error);
-    return NextResponse.json({ error: 'Failed to create item' }, { status: 500 });
+  } catch (error: any) {
+    console.error('Error creating item:', error);
+    return NextResponse.json(
+      { error: error?.message || 'Failed to create item' },
+      { status: 500 }
+    );
   }
 }
 

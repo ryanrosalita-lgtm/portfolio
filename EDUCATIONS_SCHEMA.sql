@@ -26,21 +26,21 @@ DROP POLICY IF EXISTS "Allow read for all" ON educations;
 CREATE POLICY "Allow read for all" ON educations
   FOR SELECT USING (true);
 
--- Policy 2: Allow INSERT via service role only (admin operations)
+-- Policy 2: Allow INSERT via service role or authenticated users (admin operations)
 DROP POLICY IF EXISTS "Allow insert via service role" ON educations;
 CREATE POLICY "Allow insert via service role" ON educations
-  FOR INSERT WITH CHECK (auth.role() = 'service_role');
+  FOR INSERT WITH CHECK (auth.role() = 'service_role' OR auth.role() = 'authenticated');
 
--- Policy 3: Allow UPDATE via service role only (admin operations)
+-- Policy 3: Allow UPDATE via service role or authenticated users (admin operations)
 DROP POLICY IF EXISTS "Allow update via service role" ON educations;
 CREATE POLICY "Allow update via service role" ON educations
-  FOR UPDATE USING (auth.role() = 'service_role')
-  WITH CHECK (auth.role() = 'service_role');
+  FOR UPDATE USING (auth.role() = 'service_role' OR auth.role() = 'authenticated')
+  WITH CHECK (auth.role() = 'service_role' OR auth.role() = 'authenticated');
 
--- Policy 4: Allow DELETE via service role only (admin operations)
+-- Policy 4: Allow DELETE via service role or authenticated users (admin operations)
 DROP POLICY IF EXISTS "Allow delete via service role" ON educations;
 CREATE POLICY "Allow delete via service role" ON educations
-  FOR DELETE USING (auth.role() = 'service_role');
+  FOR DELETE USING (auth.role() = 'service_role' OR auth.role() = 'authenticated');
 
 -- ============================================
 -- SAMPLE DATA

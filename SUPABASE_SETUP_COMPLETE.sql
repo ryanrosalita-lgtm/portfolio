@@ -94,11 +94,11 @@ DROP POLICY IF EXISTS "Allow read for all" ON profile;
 CREATE POLICY "Allow read for all" ON profile
   FOR SELECT USING (true);
 
--- Allow updates via service role only (for admin)
+-- Allow updates via service role or authenticated users (for admin)
 DROP POLICY IF EXISTS "Allow update via service role" ON profile;
 CREATE POLICY "Allow update via service role" ON profile
-  FOR UPDATE USING (auth.role() = 'service_role')
-  WITH CHECK (auth.role() = 'service_role');
+  FOR UPDATE USING (auth.role() = 'service_role' OR auth.role() = 'authenticated')
+  WITH CHECK (auth.role() = 'service_role' OR auth.role() = 'authenticated');
 
 -- 8. CREATE RLS POLICIES FOR PROJECTS TABLE
 DROP POLICY IF EXISTS "Allow read for all" ON projects;
@@ -107,16 +107,16 @@ CREATE POLICY "Allow read for all" ON projects
 
 DROP POLICY IF EXISTS "Allow insert via service role" ON projects;
 CREATE POLICY "Allow insert via service role" ON projects
-  FOR INSERT WITH CHECK (auth.role() = 'service_role');
+  FOR INSERT WITH CHECK (auth.role() = 'service_role' OR auth.role() = 'authenticated');
 
 DROP POLICY IF EXISTS "Allow update via service role" ON projects;
 CREATE POLICY "Allow update via service role" ON projects
-  FOR UPDATE USING (auth.role() = 'service_role')
-  WITH CHECK (auth.role() = 'service_role');
+  FOR UPDATE USING (auth.role() = 'service_role' OR auth.role() = 'authenticated')
+  WITH CHECK (auth.role() = 'service_role' OR auth.role() = 'authenticated');
 
 DROP POLICY IF EXISTS "Allow delete via service role" ON projects;
 CREATE POLICY "Allow delete via service role" ON projects
-  FOR DELETE USING (auth.role() = 'service_role');
+  FOR DELETE USING (auth.role() = 'service_role' OR auth.role() = 'authenticated');
 
 -- 9. CREATE RLS POLICIES FOR ACHIEVEMENTS TABLE
 DROP POLICY IF EXISTS "Allow read for all" ON achievements;
@@ -125,16 +125,16 @@ CREATE POLICY "Allow read for all" ON achievements
 
 DROP POLICY IF EXISTS "Allow insert via service role" ON achievements;
 CREATE POLICY "Allow insert via service role" ON achievements
-  FOR INSERT WITH CHECK (auth.role() = 'service_role');
+  FOR INSERT WITH CHECK (auth.role() = 'service_role' OR auth.role() = 'authenticated');
 
 DROP POLICY IF EXISTS "Allow update via service role" ON achievements;
 CREATE POLICY "Allow update via service role" ON achievements
-  FOR UPDATE USING (auth.role() = 'service_role')
-  WITH CHECK (auth.role() = 'service_role');
+  FOR UPDATE USING (auth.role() = 'service_role' OR auth.role() = 'authenticated')
+  WITH CHECK (auth.role() = 'service_role' OR auth.role() = 'authenticated');
 
 DROP POLICY IF EXISTS "Allow delete via service role" ON achievements;
 CREATE POLICY "Allow delete via service role" ON achievements
-  FOR DELETE USING (auth.role() = 'service_role');
+  FOR DELETE USING (auth.role() = 'service_role' OR auth.role() = 'authenticated');
 
 -- 10. CREATE RLS POLICIES FOR SKILLS TABLE
 DROP POLICY IF EXISTS "Allow read for all" ON skills;
@@ -143,16 +143,16 @@ CREATE POLICY "Allow read for all" ON skills
 
 DROP POLICY IF EXISTS "Allow insert via service role" ON skills;
 CREATE POLICY "Allow insert via service role" ON skills
-  FOR INSERT WITH CHECK (auth.role() = 'service_role');
+  FOR INSERT WITH CHECK (auth.role() = 'service_role' OR auth.role() = 'authenticated');
 
 DROP POLICY IF EXISTS "Allow update via service role" ON skills;
 CREATE POLICY "Allow update via service role" ON skills
-  FOR UPDATE USING (auth.role() = 'service_role')
-  WITH CHECK (auth.role() = 'service_role');
+  FOR UPDATE USING (auth.role() = 'service_role' OR auth.role() = 'authenticated')
+  WITH CHECK (auth.role() = 'service_role' OR auth.role() = 'authenticated');
 
 DROP POLICY IF EXISTS "Allow delete via service role" ON skills;
 CREATE POLICY "Allow delete via service role" ON skills
-  FOR DELETE USING (auth.role() = 'service_role');
+  FOR DELETE USING (auth.role() = 'service_role' OR auth.role() = 'authenticated');
 
 -- 11. CREATE RLS POLICIES FOR LANGUAGES TABLE
 DROP POLICY IF EXISTS "Allow read for all" ON languages;
@@ -161,16 +161,16 @@ CREATE POLICY "Allow read for all" ON languages
 
 DROP POLICY IF EXISTS "Allow insert via service role" ON languages;
 CREATE POLICY "Allow insert via service role" ON languages
-  FOR INSERT WITH CHECK (auth.role() = 'service_role');
+  FOR INSERT WITH CHECK (auth.role() = 'service_role' OR auth.role() = 'authenticated');
 
 DROP POLICY IF EXISTS "Allow update via service role" ON languages;
 CREATE POLICY "Allow update via service role" ON languages
-  FOR UPDATE USING (auth.role() = 'service_role')
-  WITH CHECK (auth.role() = 'service_role');
+  FOR UPDATE USING (auth.role() = 'service_role' OR auth.role() = 'authenticated')
+  WITH CHECK (auth.role() = 'service_role' OR auth.role() = 'authenticated');
 
 DROP POLICY IF EXISTS "Allow delete via service role" ON languages;
 CREATE POLICY "Allow delete via service role" ON languages
-  FOR DELETE USING (auth.role() = 'service_role');
+  FOR DELETE USING (auth.role() = 'service_role' OR auth.role() = 'authenticated');
 
 -- 12. CREATE RLS POLICIES FOR EDUCATIONS TABLE
 DROP POLICY IF EXISTS "Allow read for all" ON educations;
@@ -179,16 +179,16 @@ CREATE POLICY "Allow read for all" ON educations
 
 DROP POLICY IF EXISTS "Allow insert via service role" ON educations;
 CREATE POLICY "Allow insert via service role" ON educations
-  FOR INSERT WITH CHECK (auth.role() = 'service_role');
+  FOR INSERT WITH CHECK (auth.role() = 'service_role' OR auth.role() = 'authenticated');
 
 DROP POLICY IF EXISTS "Allow update via service role" ON educations;
 CREATE POLICY "Allow update via service role" ON educations
-  FOR UPDATE USING (auth.role() = 'service_role')
-  WITH CHECK (auth.role() = 'service_role');
+  FOR UPDATE USING (auth.role() = 'service_role' OR auth.role() = 'authenticated')
+  WITH CHECK (auth.role() = 'service_role' OR auth.role() = 'authenticated');
 
 DROP POLICY IF EXISTS "Allow delete via service role" ON educations;
 CREATE POLICY "Allow delete via service role" ON educations
-  FOR DELETE USING (auth.role() = 'service_role');
+  FOR DELETE USING (auth.role() = 'service_role' OR auth.role() = 'authenticated');
 
 -- 13. INSERT SAMPLE PROJECTS (optional)
 INSERT INTO projects (title, description, category, date, image, skills)
