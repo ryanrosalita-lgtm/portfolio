@@ -36,12 +36,22 @@ interface Language {
   proficiency: string;
 }
 
+interface Education {
+  id: number;
+  institution: string;
+  degree: string;
+  specialization: string;
+  startYear: string;
+  endYear: string;
+}
+
 export default function AdminDashboard() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [skills, setSkills] = useState<Skill[]>([]);
   const [languages, setLanguages] = useState<Language[]>([]);
-  const [activeTab, setActiveTab] = useState<'profile' | 'projects' | 'achievements' | 'skills' | 'languages'>('profile');
+  const [educations, setEducations] = useState<Education[]>([]);
+  const [activeTab, setActiveTab] = useState<'profile' | 'projects' | 'achievements' | 'skills' | 'languages' | 'educations'>('profile');
   const [editingId, setEditingId] = useState<number | null>(null);
   const router = useRouter();
 
@@ -84,6 +94,14 @@ export default function AdminDashboard() {
     proficiency: 'Native',
   });
 
+  const [educationForm, setEducationForm] = useState({
+    institution: '',
+    degree: '',
+    specialization: '',
+    startYear: new Date().getFullYear().toString(),
+    endYear: new Date().getFullYear().toString(),
+  });
+
   const [uploading, setUploading] = useState(false);
 
   // Check auth and load data
@@ -111,6 +129,7 @@ export default function AdminDashboard() {
       setAchievements(portfolioData.achievements);
       setSkills(portfolioData.skills || []);
       setLanguages(portfolioData.languages || []);
+      setEducations(portfolioData.educations || []);
       setProfileForm(profileData);
     } catch (error) {
       console.error('Failed to load data:', error);
@@ -477,6 +496,82 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error('Error:', error);
       alert('Failed to delete language');
+    }
+  };
+
+  const handleAddEducation = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!educationForm.institution || !educationForm.degree) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('/api/portfolio', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          type: 'education',
+          item: {
+            institution: educationForm.institution,
+            degree: educationForm.degree,
+            specialization: educationForm.specialization,
+            startYear: educationForm.startYear,
+            endYear: educationForm.endYear,
+          },
+        }),
+      });
+
+      if (response.ok) {
+        loadData();
+        setEducationForm({
+          institution: '',
+          degree: '',
+          specialization: '',
+          startYear: new Date().getFullYear().toString(),
+          endYear: new Date().getFullYear().toString(),
+        });
+      } else if (response.status === 401) {
+        alert('Session expired. Please login again.');
+        localStorage.removeItem('authToken');
+        router.push('/admin');
+      } else {
+        alert('Failed to add education');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to add education');
+    }
+  };
+
+  const handleDeleteEducation = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this education?')) return;
+
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`/api/portfolio?type=education&id=${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        loadData();
+      } else if (response.status === 401) {
+        alert('Session expired. Please login again.');
+        localStorage.removeItem('authToken');
+        router.push('/admin');
+      } else {
+        alert('Failed to delete education');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to delete education');
     }
   };
 

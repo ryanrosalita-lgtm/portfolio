@@ -47,12 +47,22 @@ interface Language {
   proficiency: string;
 }
 
+interface Education {
+  id: number;
+  institution: string;
+  degree: string;
+  specialization: string;
+  startYear: string;
+  endYear: string;
+}
+
 export default function Home() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [skills, setSkills] = useState<Skill[]>([]);
   const [languages, setLanguages] = useState<Language[]>([]);
+  const [educations, setEducations] = useState<Education[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -70,6 +80,7 @@ export default function Home() {
         setAchievements(portfolioData.achievements);
         setSkills(portfolioData.skills || []);
         setLanguages(portfolioData.languages || []);
+        setEducations(portfolioData.educations || []);
         setProfile(profileData);
       } catch (error) {
         console.error('Failed to load portfolio data:', error);
@@ -165,16 +176,20 @@ export default function Home() {
             </div>
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm">☎</span>
+                <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
+                </svg>
               </div>
               <div>
-                <p className="text-sm text-gray-600">Phone</p>
-                <p className="text-gray-900 font-medium">{profile?.phone || '+60168988080'}</p>
+                <p className="text-sm text-gray-600">Name</p>
+                <p className="text-gray-900 font-medium">{profile?.name || 'Shu Huan Loh'}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm">📍</span>
+              <div className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center">
+                <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z" />
+                </svg>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Location</p>
@@ -188,35 +203,51 @@ export default function Home() {
         <div className="mb-12 border-t pt-8">
           <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-gray-900">Education</h2>
           <div className="space-y-6">
-            <div>
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Taylor's University, Malaysia
-                </h3>
-                <span className="text-gray-600 text-sm">2021 - 2024</span>
-              </div>
-              <p className="text-teal-600">
-                Bachelor of Design (Honours) in Creative Media, Graphic Design Specialisation
-              </p>
-            </div>
-            <div>
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Nanyang Academy of Fine Arts, Singapore
-                </h3>
-                <span className="text-gray-600 text-sm">2019 - 2020</span>
-              </div>
-              <p className="text-teal-600">Diploma in Graphic Communication</p>
-            </div>
-            <div>
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Chinese High School, Malaysia
-                </h3>
-                <span className="text-gray-600 text-sm">2013 - 2018</span>
-              </div>
-              <p className="text-teal-600">Majored in Commerce</p>
-            </div>
+            {!loading && educations.length > 0 ? (
+              educations.map((education) => (
+                <div key={education.id}>
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {education.institution}
+                    </h3>
+                    <span className="text-gray-600 text-sm">{education.startYear} - {education.endYear}</span>
+                  </div>
+                  <p className="text-teal-600">{education.degree}{education.specialization && ` in ${education.specialization}`}</p>
+                </div>
+              ))
+            ) : (
+              <>
+                <div>
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      Taylor's University, Malaysia
+                    </h3>
+                    <span className="text-gray-600 text-sm">2021 - 2024</span>
+                  </div>
+                  <p className="text-teal-600">
+                    Bachelor of Design (Honours) in Creative Media, Graphic Design Specialisation
+                  </p>
+                </div>
+                <div>
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      Nanyang Academy of Fine Arts, Singapore
+                    </h3>
+                    <span className="text-gray-600 text-sm">2019 - 2020</span>
+                  </div>
+                  <p className="text-teal-600">Diploma in Graphic Communication</p>
+                </div>
+                <div>
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      Chinese High School, Malaysia
+                    </h3>
+                    <span className="text-gray-600 text-sm">2013 - 2018</span>
+                  </div>
+                  <p className="text-teal-600">Majored in Commerce</p>
+                </div>
+              </>
+            )}
           </div>
         </div>
 

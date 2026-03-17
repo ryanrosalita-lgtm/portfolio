@@ -5,11 +5,12 @@ import { authenticateRequest, unauthorizedResponse } from '@/lib/auth';
 
 export async function GET() {
   try {
-    const [projectsRes, achievementsRes, skillsRes, languagesRes] = await Promise.all([
+    const [projectsRes, achievementsRes, skillsRes, languagesRes, educationsRes] = await Promise.all([
       supabaseAdmin.from('projects').select('*'),
       supabaseAdmin.from('achievements').select('*'),
       supabaseAdmin.from('skills').select('*'),
       supabaseAdmin.from('languages').select('*'),
+      supabaseAdmin.from('educations').select('*'),
     ]);
 
     // If Supabase fails, fallback to local JSON data
@@ -24,6 +25,7 @@ export async function GET() {
         achievements: portfolioData.achievements || [],
         skills: portfolioData.skills || [],
         languages: [],
+        educations: [],
         source: 'fallback',
       });
     }
@@ -33,6 +35,7 @@ export async function GET() {
       achievements: achievementsRes.data || [],
       skills: skillsRes.data || [],
       languages: languagesRes.data || [],
+      educations: educationsRes.data || [],
       source: 'supabase',
     });
   } catch (error) {
@@ -88,6 +91,11 @@ export async function POST(request: NextRequest) {
         .from('languages')
         .insert([item])
         .select();
+    } else if (type === 'education') {
+      result = await supabaseAdmin
+        .from('educations')
+        .insert([item])
+        .select();
     } else {
       return NextResponse.json(
         { error: 'Invalid type' },
@@ -100,11 +108,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Fetch all data to return
-    const [projectsRes, achievementsRes, skillsRes, languagesRes] = await Promise.all([
+    const [projectsRes, achievementsRes, skillsRes, languagesRes, educationsRes] = await Promise.all([
       supabaseAdmin.from('projects').select('*'),
       supabaseAdmin.from('achievements').select('*'),
       supabaseAdmin.from('skills').select('*'),
       supabaseAdmin.from('languages').select('*'),
+      supabaseAdmin.from('educations').select('*'),
     ]);
 
     return NextResponse.json({
@@ -114,6 +123,7 @@ export async function POST(request: NextRequest) {
         achievements: achievementsRes.data || [],
         skills: skillsRes.data || [],
         languages: languagesRes.data || [],
+        educations: educationsRes.data || [],
       },
     });
   } catch (error) {
@@ -167,6 +177,12 @@ export async function PUT(request: NextRequest) {
         .update(item)
         .eq('id', id)
         .select();
+    } else if (type === 'education') {
+      result = await supabaseAdmin
+        .from('educations')
+        .update(item)
+        .eq('id', id)
+        .select();
     } else {
       return NextResponse.json(
         { error: 'Invalid type' },
@@ -179,11 +195,12 @@ export async function PUT(request: NextRequest) {
     }
 
     // Fetch all data to return
-    const [projectsRes, achievementsRes, skillsRes, languagesRes] = await Promise.all([
+    const [projectsRes, achievementsRes, skillsRes, languagesRes, educationsRes] = await Promise.all([
       supabaseAdmin.from('projects').select('*'),
       supabaseAdmin.from('achievements').select('*'),
       supabaseAdmin.from('skills').select('*'),
       supabaseAdmin.from('languages').select('*'),
+      supabaseAdmin.from('educations').select('*'),
     ]);
 
     return NextResponse.json({
@@ -193,6 +210,7 @@ export async function PUT(request: NextRequest) {
         achievements: achievementsRes.data || [],
         skills: skillsRes.data || [],
         languages: languagesRes.data || [],
+        educations: educationsRes.data || [],
       },
     });
   } catch (error) {
@@ -231,6 +249,8 @@ export async function DELETE(request: NextRequest) {
       result = await supabaseAdmin.from('skills').delete().eq('id', id);
     } else if (type === 'language') {
       result = await supabaseAdmin.from('languages').delete().eq('id', id);
+    } else if (type === 'education') {
+      result = await supabaseAdmin.from('educations').delete().eq('id', id);
     } else {
       return NextResponse.json(
         { error: 'Invalid type' },
@@ -243,11 +263,12 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Fetch all data to return
-    const [projectsRes, achievementsRes, skillsRes, languagesRes] = await Promise.all([
+    const [projectsRes, achievementsRes, skillsRes, languagesRes, educationsRes] = await Promise.all([
       supabaseAdmin.from('projects').select('*'),
       supabaseAdmin.from('achievements').select('*'),
       supabaseAdmin.from('skills').select('*'),
       supabaseAdmin.from('languages').select('*'),
+      supabaseAdmin.from('educations').select('*'),
     ]);
 
     return NextResponse.json({
@@ -257,6 +278,7 @@ export async function DELETE(request: NextRequest) {
         achievements: achievementsRes.data || [],
         skills: skillsRes.data || [],
         languages: languagesRes.data || [],
+        educations: educationsRes.data || [],
       },
     });
   } catch (error) {
