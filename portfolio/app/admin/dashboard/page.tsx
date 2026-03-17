@@ -597,10 +597,10 @@ export default function AdminDashboard() {
 
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Tabs */}
-        <div className="flex gap-4 mb-8">
+        <div className="flex gap-2 mb-8 flex-wrap">
           <button
             onClick={() => setActiveTab('profile')}
-            className={`px-6 py-2 rounded-lg font-medium ${
+            className={`px-4 py-2 rounded-lg font-medium text-sm ${
               activeTab === 'profile'
                 ? 'bg-teal-600 text-white'
                 : 'bg-white text-gray-700 border border-gray-300'
@@ -610,17 +610,17 @@ export default function AdminDashboard() {
           </button>
           <button
             onClick={() => setActiveTab('projects')}
-            className={`px-6 py-2 rounded-lg font-medium ${
+            className={`px-4 py-2 rounded-lg font-medium text-sm ${
               activeTab === 'projects'
                 ? 'bg-teal-600 text-white'
                 : 'bg-white text-gray-700 border border-gray-300'
             }`}
           >
-            Portfolio Projects
+            Projects
           </button>
           <button
             onClick={() => setActiveTab('achievements')}
-            className={`px-6 py-2 rounded-lg font-medium ${
+            className={`px-4 py-2 rounded-lg font-medium text-sm ${
               activeTab === 'achievements'
                 ? 'bg-teal-600 text-white'
                 : 'bg-white text-gray-700 border border-gray-300'
@@ -630,23 +630,33 @@ export default function AdminDashboard() {
           </button>
           <button
             onClick={() => setActiveTab('skills')}
-            className={`px-6 py-2 rounded-lg font-medium ${
+            className={`px-4 py-2 rounded-lg font-medium text-sm ${
               activeTab === 'skills'
                 ? 'bg-teal-600 text-white'
                 : 'bg-white text-gray-700 border border-gray-300'
             }`}
           >
-            Technical Skills
+            Skills
           </button>
           <button
             onClick={() => setActiveTab('languages')}
-            className={`px-6 py-2 rounded-lg font-medium ${
+            className={`px-4 py-2 rounded-lg font-medium text-sm ${
               activeTab === 'languages'
                 ? 'bg-teal-600 text-white'
                 : 'bg-white text-gray-700 border border-gray-300'
             }`}
           >
             Languages
+          </button>
+          <button
+            onClick={() => setActiveTab('educations')}
+            className={`px-4 py-2 rounded-lg font-medium text-sm ${
+              activeTab === 'educations'
+                ? 'bg-teal-600 text-white'
+                : 'bg-white text-gray-700 border border-gray-300'
+            }`}
+          >
+            Education
           </button>
         </div>
 
@@ -663,7 +673,9 @@ export default function AdminDashboard() {
                   ? 'Add New Achievement'
                   : activeTab === 'skills'
                   ? 'Add New Skill'
-                  : 'Add New Language'}
+                  : activeTab === 'languages'
+                  ? 'Add New Language'
+                  : 'Add New Education'}
               </h2>
 
               {activeTab === 'profile' ? (
@@ -1128,6 +1140,95 @@ export default function AdminDashboard() {
                     Add Language
                   </button>
                 </form>
+              ) : activeTab === 'educations' ? (
+                <form onSubmit={handleAddEducation} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-900 mb-1">
+                      Institution *
+                    </label>
+                    <input
+                      type="text"
+                      value={educationForm.institution}
+                      onChange={(e) =>
+                        setEducationForm({ ...educationForm, institution: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600 text-gray-900 placeholder-gray-500"
+                      placeholder="e.g., Taylor's University"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-900 mb-1">
+                      Degree *
+                    </label>
+                    <input
+                      type="text"
+                      value={educationForm.degree}
+                      onChange={(e) =>
+                        setEducationForm({ ...educationForm, degree: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600 text-gray-900 placeholder-gray-500"
+                      placeholder="e.g., Bachelor of Design (Honours)"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-900 mb-1">
+                      Specialization
+                    </label>
+                    <input
+                      type="text"
+                      value={educationForm.specialization}
+                      onChange={(e) =>
+                        setEducationForm({ ...educationForm, specialization: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600 text-gray-900 placeholder-gray-500"
+                      placeholder="e.g., Graphic Design"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 mb-1">
+                        Start Year
+                      </label>
+                      <input
+                        type="number"
+                        value={educationForm.startYear}
+                        onChange={(e) =>
+                          setEducationForm({ ...educationForm, startYear: e.target.value })
+                        }
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600 text-gray-900"
+                        placeholder="2021"
+                        min="1900"
+                        max={new Date().getFullYear()}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 mb-1">
+                        End Year
+                      </label>
+                      <input
+                        type="number"
+                        value={educationForm.endYear}
+                        onChange={(e) =>
+                          setEducationForm({ ...educationForm, endYear: e.target.value })
+                        }
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600 text-gray-900"
+                        placeholder="2024"
+                        min="1900"
+                        max={new Date().getFullYear() + 10}
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full bg-teal-600 text-white py-2 rounded-lg font-medium hover:bg-teal-700"
+                  >
+                    Add Education
+                  </button>
+                </form>
               ) : null}
             </div>
           </div>
@@ -1231,6 +1332,36 @@ export default function AdminDashboard() {
                 ) : (
                   <div className="bg-white rounded-lg shadow p-4 text-center text-gray-500">
                     No languages yet. Add one using the form!
+                  </div>
+                )
+              ) : activeTab === 'educations' ? (
+                educations.length > 0 ? (
+                  <div className="space-y-4">
+                    {educations.map((education) => (
+                      <div key={education.id} className="bg-white rounded-lg shadow p-4">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <h3 className="font-bold text-gray-900">{education.institution}</h3>
+                            <p className="text-sm text-teal-600 mt-1">
+                              {education.degree}{education.specialization && ` in ${education.specialization}`}
+                            </p>
+                            <p className="text-xs text-gray-600 mt-2">
+                              {education.startYear} - {education.endYear}
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => handleDeleteEducation(education.id)}
+                            className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="bg-white rounded-lg shadow p-4 text-center text-gray-500">
+                    No educations yet. Add one using the form!
                   </div>
                 )
               ) : (

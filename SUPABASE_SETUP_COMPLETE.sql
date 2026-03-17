@@ -62,20 +62,33 @@ CREATE TABLE IF NOT EXISTS languages (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 5. INSERT DEFAULT PROFILE DATA
+-- 6. CREATE EDUCATIONS TABLE (if not exists)
+CREATE TABLE IF NOT EXISTS educations (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  institution TEXT NOT NULL,
+  degree TEXT NOT NULL,
+  specialization TEXT,
+  startYear TEXT NOT NULL,
+  endYear TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 7. INSERT DEFAULT PROFILE DATA
 INSERT INTO profile (id, name, title, bio, email, phone, location, image)
 VALUES (1, 'Lynard', 'Graphic Designer', 'Young Professional', 'alfielynard23@gmail.com', '+639453553379', 'Philippines, Digos City', NULL)
 ON CONFLICT (id) DO UPDATE SET 
   updated_at = CURRENT_TIMESTAMP;
 
--- 6. ENABLE ROW LEVEL SECURITY (RLS)
+-- 8. ENABLE ROW LEVEL SECURITY (RLS)
 ALTER TABLE profile ENABLE ROW LEVEL SECURITY;
 ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE achievements ENABLE ROW LEVEL SECURITY;
 ALTER TABLE skills ENABLE ROW LEVEL SECURITY;
 ALTER TABLE languages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE educations ENABLE ROW LEVEL SECURITY;
 
--- 7. CREATE RLS POLICIES FOR PROFILE TABLE
+-- 9. CREATE RLS POLICIES FOR PROFILE TABLE
 -- Allow anyone to read profile
 DROP POLICY IF EXISTS "Allow read for all" ON profile;
 CREATE POLICY "Allow read for all" ON profile
@@ -159,6 +172,24 @@ DROP POLICY IF EXISTS "Allow delete via service role" ON languages;
 CREATE POLICY "Allow delete via service role" ON languages
   FOR DELETE USING (auth.role() = 'service_role');
 
+-- 12. CREATE RLS POLICIES FOR EDUCATIONS TABLE
+DROP POLICY IF EXISTS "Allow read for all" ON educations;
+CREATE POLICY "Allow read for all" ON educations
+  FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Allow insert via service role" ON educations;
+CREATE POLICY "Allow insert via service role" ON educations
+  FOR INSERT WITH CHECK (auth.role() = 'service_role');
+
+DROP POLICY IF EXISTS "Allow update via service role" ON educations;
+CREATE POLICY "Allow update via service role" ON educations
+  FOR UPDATE USING (auth.role() = 'service_role')
+  WITH CHECK (auth.role() = 'service_role');
+
+DROP POLICY IF EXISTS "Allow delete via service role" ON educations;
+CREATE POLICY "Allow delete via service role" ON educations
+  FOR DELETE USING (auth.role() = 'service_role');
+
 -- 13. INSERT SAMPLE PROJECTS (optional)
 INSERT INTO projects (title, description, category, date, image, skills)
 VALUES 
@@ -184,6 +215,22 @@ VALUES
   ('PostgreSQL', 'Database', 85, 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@latest/icons/postgresql.svg'),
   ('Prisma', 'Database', 80, 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@latest/icons/prisma.svg'),
   ('Adobe Photoshop', 'Design', 90, 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@latest/icons/adobephotoshop.svg')
+ON CONFLICT DO NOTHING;
+
+-- 16. INSERT SAMPLE LANGUAGES (optional)
+INSERT INTO languages (name, proficiency)
+VALUES 
+  ('Mandarin', 'Native'),
+  ('English', 'IELTS Band 8.0'),
+  ('Malay', 'Basic')
+ON CONFLICT DO NOTHING;
+
+-- 17. INSERT SAMPLE EDUCATIONS (optional)
+INSERT INTO educations (institution, degree, specialization, startYear, endYear)
+VALUES 
+  ('Taylor''s University, Malaysia', 'Bachelor of Design (Honours) in Creative Media', 'Graphic Design Specialisation', '2021', '2024'),
+  ('Nanyang Academy of Fine Arts, Singapore', 'Diploma in Graphic Communication', '', '2019', '2020'),
+  ('Chinese High School, Malaysia', 'Secondary Education', 'Commerce', '2013', '2018')
 ON CONFLICT DO NOTHING;
 
 -- ============================================

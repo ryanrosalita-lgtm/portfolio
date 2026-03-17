@@ -91,6 +91,49 @@
       "level": 90,
       "logo": "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@latest/icons/adobephotoshop.svg"
     }
+  ],
+  "languages": [
+    {
+      "id": 1,
+      "name": "Mandarin",
+      "proficiency": "Native"
+    },
+    {
+      "id": 2,
+      "name": "English",
+      "proficiency": "IELTS Band 8.0"
+    },
+    {
+      "id": 3,
+      "name": "Malay",
+      "proficiency": "Basic"
+    }
+  ],
+  "educations": [
+    {
+      "id": 1,
+      "institution": "Taylor's University, Malaysia",
+      "degree": "Bachelor of Design (Honours) in Creative Media",
+      "specialization": "Graphic Design Specialisation",
+      "startYear": "2021",
+      "endYear": "2024"
+    },
+    {
+      "id": 2,
+      "institution": "Nanyang Academy of Fine Arts, Singapore",
+      "degree": "Diploma in Graphic Communication",
+      "specialization": "",
+      "startYear": "2019",
+      "endYear": "2020"
+    },
+    {
+      "id": 3,
+      "institution": "Chinese High School, Malaysia",
+      "degree": "Secondary Education",
+      "specialization": "Commerce",
+      "startYear": "2013",
+      "endYear": "2018"
+    }
   ]
 }
 
