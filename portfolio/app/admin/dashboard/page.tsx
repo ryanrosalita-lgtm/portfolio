@@ -179,6 +179,45 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleProjectImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('bucket', 'project-images');
+
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.url) {
+        setProjectForm({ ...projectForm, image: data.url });
+        alert('Project image uploaded successfully!');
+      } else if (response.status === 401) {
+        alert('Session expired. Please login again.');
+        localStorage.removeItem('authToken');
+        router.push('/admin');
+      } else {
+        alert(data.error || 'Upload failed');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert('Failed to upload project image');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!profileForm.name) {
@@ -1018,17 +1057,37 @@ export default function AdminDashboard() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-900 mb-1">
-                      Image URL
+                      Project Image
                     </label>
-                    <input
-                      type="text"
-                      value={projectForm.image}
-                      onChange={(e) =>
-                        setProjectForm({ ...projectForm, image: e.target.value })
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600 text-gray-900 placeholder-gray-500"
-                      placeholder="/images/project.jpg"
-                    />
+                    <div className="flex gap-4 items-end">
+                      <div className="flex-1">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleProjectImageUpload}
+                          disabled={uploading}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600 text-gray-900"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Upload JPG, PNG, or WebP (Max 5MB)</p>
+                      </div>
+                      <button
+                        type="button"
+                        disabled={uploading}
+                        className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 disabled:bg-gray-400 whitespace-nowrap"
+                      >
+                        {uploading ? 'Uploading...' : 'Upload'}
+                      </button>
+                    </div>
+                    {projectForm.image && (
+                      <div className="mt-3">
+                        <img
+                          src={projectForm.image}
+                          alt="Project preview"
+                          className="w-32 h-32 object-cover rounded-lg"
+                        />
+                        <p className="text-xs text-gray-600 mt-1">URL: {projectForm.image.substring(0, 50)}...</p>
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex gap-2">

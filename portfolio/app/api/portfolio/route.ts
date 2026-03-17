@@ -5,12 +5,14 @@ import { authenticateRequest, unauthorizedResponse } from '@/lib/auth';
 
 export async function GET() {
   try {
-    const [projectsRes, achievementsRes, skillsRes, languagesRes, educationsRes] = await Promise.all([
+    const [projectsRes, achievementsRes, skillsRes, languagesRes, educationsRes, coreSkillsRes, softSkillsRes] = await Promise.all([
       supabaseAdmin.from('projects').select('*'),
       supabaseAdmin.from('achievements').select('*'),
       supabaseAdmin.from('skills').select('*'),
       supabaseAdmin.from('languages').select('*'),
       supabaseAdmin.from('educations').select('*'),
+      supabaseAdmin.from('core_skills').select('*'),
+      supabaseAdmin.from('soft_skills').select('*'),
     ]);
 
     // Debug logging
@@ -22,13 +24,15 @@ export async function GET() {
     }
 
     // If Supabase fails, fallback to local JSON data
-    if (projectsRes.error || achievementsRes.error || skillsRes.error || languagesRes.error || educationsRes.error) {
+    if (projectsRes.error || achievementsRes.error || skillsRes.error || languagesRes.error || educationsRes.error || coreSkillsRes.error || softSkillsRes.error) {
       console.warn('Supabase connection failed, using fallback data');
       console.error('Projects error:', projectsRes.error);
       console.error('Achievements error:', achievementsRes.error);
       console.error('Skills error:', skillsRes.error);
       console.error('Languages error:', languagesRes.error);
       console.error('Educations error:', educationsRes.error);
+      console.error('Core skills error:', coreSkillsRes.error);
+      console.error('Soft skills error:', softSkillsRes.error);
       
       return NextResponse.json({
         projects: portfolioData.projects || [],
@@ -36,6 +40,8 @@ export async function GET() {
         skills: portfolioData.skills || [],
         languages: [],
         educations: [],
+        coreSkills: [],
+        softSkills: [],
         source: 'fallback',
       });
     }
@@ -46,6 +52,8 @@ export async function GET() {
       skills: skillsRes.data || [],
       languages: languagesRes.data || [],
       educations: educationsRes.data || [],
+      coreSkills: coreSkillsRes.data || [],
+      softSkills: softSkillsRes.data || [],
       source: 'supabase',
     });
   } catch (error) {
