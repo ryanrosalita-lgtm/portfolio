@@ -1,0 +1,96 @@
+{
+  "projects": [
+    {
+      "id": 1,
+      "title": "Sample Project 1",
+      "description": "Branding and packaging design project",
+      "category": "Branding",
+      "date": "2024-01-15",
+      "image": "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=500&h=300&fit=crop",
+      "skills": ["Adobe Illustrator", "Branding", "Packaging Design"]
+    }
+  ],
+  "achievements": [
+    {
+      "id": 1,
+      "title": "Design Award",
+      "description": "Won Design Excellence Award from Taylor's University",
+      "date": "2023-06-20",
+      "type": "Award",
+      "issuer": "Taylor's University"
+    }
+  ],
+  "skills": [
+    {
+      "id": 1,
+      "name": "React",
+      "category": "Programming",
+      "level": 85,
+      "logo": "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@latest/icons/react.svg"
+    },
+    {
+      "id": 2,
+      "name": "JavaScript",
+      "category": "Programming",
+      "level": 90,
+      "logo": "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@latest/icons/javascript.svg"
+    },
+    {
+      "id": 3,
+      "name": "Java",
+      "category": "Programming",
+      "level": 80,
+      "logo": "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@latest/icons/openjdk.svg"
+    },
+    {
+      "id": 4,
+      "name": "Python",
+      "category": "Programming",
+      "level": 85,
+      "logo": "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@latest/icons/python.svg"
+    },
+    {
+      "id": 5,
+      "name": "PHP",
+      "category": "Programming",
+      "level": 75,
+      "logo": "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@latest/icons/php.svg"
+    },
+    {
+      "id": 6,
+      "name": "SQL",
+      "category": "Database",
+      "level": 88,
+      "logo": "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@latest/icons/mysql.svg"
+    },
+    {
+      "id": 7,
+      "name": "SQLite",
+      "category": "Database",
+      "level": 82,
+      "logo": "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@latest/icons/sqlite.svg"
+    },
+    {
+      "id": 8,
+      "name": "PostgreSQL",
+      "category": "Database",
+      "level": 85,
+      "logo": "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@latest/icons/postgresql.svg"
+    },
+    {
+      "id": 9,
+      "name": "Prisma",
+      "category": "Database",
+      "level": 80,
+      "logo": "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@latest/icons/prisma.svg"
+    },
+    {
+      "id": 10,
+      "name": "Adobe Photoshop",
+      "category": "Design",
+      "level": 90,
+      "logo": "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@latest/icons/adobephotoshop.svg"
+    }
+  ]
+}
+
