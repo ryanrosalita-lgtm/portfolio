@@ -30,11 +30,18 @@ interface Skill {
   logo: string;
 }
 
+interface Language {
+  id: number;
+  name: string;
+  proficiency: string;
+}
+
 export default function AdminDashboard() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [skills, setSkills] = useState<Skill[]>([]);
-  const [activeTab, setActiveTab] = useState<'profile' | 'projects' | 'achievements' | 'skills'>('profile');
+  const [languages, setLanguages] = useState<Language[]>([]);
+  const [activeTab, setActiveTab] = useState<'profile' | 'projects' | 'achievements' | 'skills' | 'languages'>('profile');
   const [editingId, setEditingId] = useState<number | null>(null);
   const router = useRouter();
 
@@ -70,6 +77,11 @@ export default function AdminDashboard() {
     category: 'Programming',
     level: 80,
     logo: '',
+  });
+
+  const [languageForm, setLanguageForm] = useState({
+    name: '',
+    proficiency: 'Native',
   });
 
   const [uploading, setUploading] = useState(false);
