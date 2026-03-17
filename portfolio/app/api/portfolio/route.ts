@@ -5,10 +5,11 @@ import { authenticateRequest, unauthorizedResponse } from '@/lib/auth';
 
 export async function GET() {
   try {
-    const [projectsRes, achievementsRes, skillsRes] = await Promise.all([
+    const [projectsRes, achievementsRes, skillsRes, languagesRes] = await Promise.all([
       supabaseAdmin.from('projects').select('*'),
       supabaseAdmin.from('achievements').select('*'),
       supabaseAdmin.from('skills').select('*'),
+      supabaseAdmin.from('languages').select('*'),
     ]);
 
     // If Supabase fails, fallback to local JSON data
@@ -22,6 +23,7 @@ export async function GET() {
         projects: portfolioData.projects || [],
         achievements: portfolioData.achievements || [],
         skills: portfolioData.skills || [],
+        languages: [],
         source: 'fallback',
       });
     }
@@ -30,6 +32,7 @@ export async function GET() {
       projects: projectsRes.data || [],
       achievements: achievementsRes.data || [],
       skills: skillsRes.data || [],
+      languages: languagesRes.data || [],
       source: 'supabase',
     });
   } catch (error) {
@@ -80,6 +83,11 @@ export async function POST(request: NextRequest) {
         .from('skills')
         .insert([item])
         .select();
+    } else if (type === 'language') {
+      result = await supabaseAdmin
+        .from('languages')
+        .insert([item])
+        .select();
     } else {
       return NextResponse.json(
         { error: 'Invalid type' },
@@ -92,10 +100,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Fetch all data to return
-    const [projectsRes, achievementsRes, skillsRes] = await Promise.all([
+    const [projectsRes, achievementsRes, skillsRes, languagesRes] = await Promise.all([
       supabaseAdmin.from('projects').select('*'),
       supabaseAdmin.from('achievements').select('*'),
       supabaseAdmin.from('skills').select('*'),
+      supabaseAdmin.from('languages').select('*'),
     ]);
 
     return NextResponse.json({
@@ -104,6 +113,7 @@ export async function POST(request: NextRequest) {
         projects: projectsRes.data || [],
         achievements: achievementsRes.data || [],
         skills: skillsRes.data || [],
+        languages: languagesRes.data || [],
       },
     });
   } catch (error) {
@@ -151,6 +161,12 @@ export async function PUT(request: NextRequest) {
         .update(item)
         .eq('id', id)
         .select();
+    } else if (type === 'language') {
+      result = await supabaseAdmin
+        .from('languages')
+        .update(item)
+        .eq('id', id)
+        .select();
     } else {
       return NextResponse.json(
         { error: 'Invalid type' },
@@ -163,10 +179,11 @@ export async function PUT(request: NextRequest) {
     }
 
     // Fetch all data to return
-    const [projectsRes, achievementsRes, skillsRes] = await Promise.all([
+    const [projectsRes, achievementsRes, skillsRes, languagesRes] = await Promise.all([
       supabaseAdmin.from('projects').select('*'),
       supabaseAdmin.from('achievements').select('*'),
       supabaseAdmin.from('skills').select('*'),
+      supabaseAdmin.from('languages').select('*'),
     ]);
 
     return NextResponse.json({
@@ -175,6 +192,7 @@ export async function PUT(request: NextRequest) {
         projects: projectsRes.data || [],
         achievements: achievementsRes.data || [],
         skills: skillsRes.data || [],
+        languages: languagesRes.data || [],
       },
     });
   } catch (error) {
@@ -211,6 +229,8 @@ export async function DELETE(request: NextRequest) {
       result = await supabaseAdmin.from('achievements').delete().eq('id', id);
     } else if (type === 'skill') {
       result = await supabaseAdmin.from('skills').delete().eq('id', id);
+    } else if (type === 'language') {
+      result = await supabaseAdmin.from('languages').delete().eq('id', id);
     } else {
       return NextResponse.json(
         { error: 'Invalid type' },
@@ -223,10 +243,11 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Fetch all data to return
-    const [projectsRes, achievementsRes, skillsRes] = await Promise.all([
+    const [projectsRes, achievementsRes, skillsRes, languagesRes] = await Promise.all([
       supabaseAdmin.from('projects').select('*'),
       supabaseAdmin.from('achievements').select('*'),
       supabaseAdmin.from('skills').select('*'),
+      supabaseAdmin.from('languages').select('*'),
     ]);
 
     return NextResponse.json({
@@ -235,6 +256,7 @@ export async function DELETE(request: NextRequest) {
         projects: projectsRes.data || [],
         achievements: achievementsRes.data || [],
         skills: skillsRes.data || [],
+        languages: languagesRes.data || [],
       },
     });
   } catch (error) {

@@ -110,6 +110,7 @@ export default function AdminDashboard() {
       setProjects(portfolioData.projects);
       setAchievements(portfolioData.achievements);
       setSkills(portfolioData.skills || []);
+      setLanguages(portfolioData.languages || []);
       setProfileForm(profileData);
     } catch (error) {
       console.error('Failed to load data:', error);
@@ -409,6 +410,76 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleAddLanguage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!languageForm.name || !languageForm.proficiency) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('/api/portfolio', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          type: 'language',
+          item: {
+            name: languageForm.name,
+            proficiency: languageForm.proficiency,
+          },
+        }),
+      });
+
+      if (response.ok) {
+        loadData();
+        setLanguageForm({
+          name: '',
+          proficiency: 'Native',
+        });
+      } else if (response.status === 401) {
+        alert('Session expired. Please login again.');
+        localStorage.removeItem('authToken');
+        router.push('/admin');
+      } else {
+        alert('Failed to add language');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to add language');
+    }
+  };
+
+  const handleDeleteLanguage = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this language?')) return;
+
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`/api/portfolio?type=language&id=${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        loadData();
+      } else if (response.status === 401) {
+        alert('Session expired. Please login again.');
+        localStorage.removeItem('authToken');
+        router.push('/admin');
+      } else {
+        alert('Failed to delete language');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to delete language');
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('authToken');
     router.push('/admin');
@@ -472,6 +543,16 @@ export default function AdminDashboard() {
           >
             Technical Skills
           </button>
+          <button
+            onClick={() => setActiveTab('languages')}
+            className={`px-6 py-2 rounded-lg font-medium ${
+              activeTab === 'languages'
+                ? 'bg-teal-600 text-white'
+                : 'bg-white text-gray-700 border border-gray-300'
+            }`}
+          >
+            Languages
+          </button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -485,7 +566,9 @@ export default function AdminDashboard() {
                   ? 'Add New Project'
                   : activeTab === 'achievements'
                   ? 'Add New Achievement'
-                  : 'Add New Skill'}
+                  : activeTab === 'skills'
+                  ? 'Add New Skill'
+                  : 'Add New Language'}
               </h2>
 
               {activeTab === 'profile' ? (
@@ -815,7 +898,7 @@ export default function AdminDashboard() {
                     Add Achievement
                   </button>
                 </form>
-              ) : (
+              ) : activeTab === 'skills' ? (
                 <form onSubmit={handleAddSkill} className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-900 mb-1">
@@ -908,7 +991,49 @@ export default function AdminDashboard() {
                     Add Skill
                   </button>
                 </form>
-              )}
+              ) : activeTab === 'languages' ? (
+                <form onSubmit={handleAddLanguage} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-900 mb-1">
+                      Language Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={languageForm.name}
+                      onChange={(e) =>
+                        setLanguageForm({ ...languageForm, name: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600 text-gray-900 placeholder-gray-500"
+                      placeholder="e.g., English, Spanish, Tagalog"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-900 mb-1">
+                      Proficiency Level *
+                    </label>
+                    <select
+                      value={languageForm.proficiency}
+                      onChange={(e) =>
+                        setLanguageForm({ ...languageForm, proficiency: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600 text-gray-900"
+                    >
+                      <option>Native</option>
+                      <option>Fluent</option>
+                      <option>Intermediate</option>
+                      <option>Basic</option>
+                    </select>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full bg-teal-600 text-white py-2 rounded-lg font-medium hover:bg-teal-700"
+                  >
+                    Add Language
+                  </button>
+                </form>
+              ) : null}
             </div>
           </div>
 
@@ -984,6 +1109,33 @@ export default function AdminDashboard() {
                 ) : (
                   <div className="bg-white rounded-lg shadow p-4 text-center text-gray-500">
                     No achievements yet. Add one using the form!
+                  </div>
+                )
+              ) : activeTab === 'languages' ? (
+                languages.length > 0 ? (
+                  <div className="space-y-4">
+                    {languages.map((language) => (
+                      <div key={language.id} className="bg-white rounded-lg shadow p-4">
+                        <div className="flex justify-between items-center">
+                          <div className="flex-1">
+                            <h3 className="font-bold text-gray-900">{language.name}</h3>
+                            <p className="text-sm text-gray-600 mt-1">
+                              {language.proficiency}
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => handleDeleteLanguage(language.id)}
+                            className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="bg-white rounded-lg shadow p-4 text-center text-gray-500">
+                    No languages yet. Add one using the form!
                   </div>
                 )
               ) : (

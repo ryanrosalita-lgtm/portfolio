@@ -53,6 +53,15 @@ CREATE TABLE IF NOT EXISTS skills (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 5. CREATE LANGUAGES TABLE (if not exists)
+CREATE TABLE IF NOT EXISTS languages (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  name TEXT NOT NULL,
+  proficiency TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
 -- 5. INSERT DEFAULT PROFILE DATA
 INSERT INTO profile (id, name, title, bio, email, phone, location, image)
 VALUES (1, 'Lynard', 'Graphic Designer', 'Young Professional', 'alfielynard23@gmail.com', '+639453553379', 'Philippines, Digos City', NULL)
@@ -64,6 +73,7 @@ ALTER TABLE profile ENABLE ROW LEVEL SECURITY;
 ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE achievements ENABLE ROW LEVEL SECURITY;
 ALTER TABLE skills ENABLE ROW LEVEL SECURITY;
+ALTER TABLE languages ENABLE ROW LEVEL SECURITY;
 
 -- 7. CREATE RLS POLICIES FOR PROFILE TABLE
 -- Allow anyone to read profile
@@ -131,19 +141,37 @@ DROP POLICY IF EXISTS "Allow delete via service role" ON skills;
 CREATE POLICY "Allow delete via service role" ON skills
   FOR DELETE USING (auth.role() = 'service_role');
 
--- 11. INSERT SAMPLE PROJECTS (optional)
+-- 11. CREATE RLS POLICIES FOR LANGUAGES TABLE
+DROP POLICY IF EXISTS "Allow read for all" ON languages;
+CREATE POLICY "Allow read for all" ON languages
+  FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Allow insert via service role" ON languages;
+CREATE POLICY "Allow insert via service role" ON languages
+  FOR INSERT WITH CHECK (auth.role() = 'service_role');
+
+DROP POLICY IF EXISTS "Allow update via service role" ON languages;
+CREATE POLICY "Allow update via service role" ON languages
+  FOR UPDATE USING (auth.role() = 'service_role')
+  WITH CHECK (auth.role() = 'service_role');
+
+DROP POLICY IF EXISTS "Allow delete via service role" ON languages;
+CREATE POLICY "Allow delete via service role" ON languages
+  FOR DELETE USING (auth.role() = 'service_role');
+
+-- 13. INSERT SAMPLE PROJECTS (optional)
 INSERT INTO projects (title, description, category, date, image, skills)
 VALUES 
   ('Sample Project 1', 'Branding and packaging design project', 'Branding', '2024-01-15', 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=500&h=300&fit=crop', ARRAY['Adobe Illustrator', 'Branding', 'Packaging Design'])
 ON CONFLICT DO NOTHING;
 
--- 12. INSERT SAMPLE ACHIEVEMENTS (optional)
+-- 14. INSERT SAMPLE ACHIEVEMENTS (optional)
 INSERT INTO achievements (title, description, date, type, issuer)
 VALUES 
   ('Design Award', 'Won Design Excellence Award from Taylor''s University', '2023-06-20', 'Award', 'Taylor''s University')
 ON CONFLICT DO NOTHING;
 
--- 13. INSERT SAMPLE SKILLS (optional)
+-- 15. INSERT SAMPLE SKILLS (optional)
 INSERT INTO skills (name, category, level, logo)
 VALUES 
   ('React', 'Programming', 85, 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@latest/icons/react.svg'),
