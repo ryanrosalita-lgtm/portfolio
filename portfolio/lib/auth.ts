@@ -5,7 +5,7 @@ import { verifyToken, extractTokenFromHeader } from './jwt';
  * Middleware to verify JWT token from Authorization header
  * Returns the decoded token if valid, otherwise returns null
  */
-export function authenticateRequest(request: NextRequest): { email: string } | null {
+export async function authenticateRequest(request: NextRequest): Promise<{ email: string } | null> {
   const authHeader = request.headers.get('Authorization');
   const token = extractTokenFromHeader(authHeader);
 
@@ -13,7 +13,7 @@ export function authenticateRequest(request: NextRequest): { email: string } | n
     return null;
   }
 
-  const payload = verifyToken(token);
+  const payload = await verifyToken(token);
   if (!payload) {
     return null;
   }

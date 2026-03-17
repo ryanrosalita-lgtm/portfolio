@@ -1,7 +1,7 @@
-import jwt from 'jsonwebtoken';
+import { jwtVerify, SignJWT } from 'jose';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this';
-const JWT_EXPIRY = '24h';
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'vc5cRT5EzhtfZJ/NTkPkYj0MrFPmMBpBUqSthUOgwDY=');
+const JWT_EXPIRY = 86400; // 24 hours in seconds
 
 export interface JWTPayload {
   email: string;
@@ -12,19 +12,24 @@ export interface JWTPayload {
 /**
  * Generate a JWT token
  */
-export function generateToken(email: string): string {
-  return jwt.sign({ email }, JWT_SECRET, {
-    expiresIn: JWT_EXPIRY,
-  });
+export async function generateToken(email: string): Promise<string> {
+  return new SignJWT({ email })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setExpirationTime('24h')
+    .sign(JWT_SECRET);
 }
 
 /**
  * Verify and decode a JWT token
  */
-export function verifyToken(token: string): JWTPayload | null {
+export async function verifyToken(token: string): Promise<JWTPayload | null> {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as JWTPayload;
-    return decoded;
+    const verified = await jwtVerify(token, JWT_SECRET);
+    return {
+      email: verified.payload.email as string,
+      iat: verified.payload.iat,
+      exp: verified.payload.exp,
+    };
   } catch (error) {
     return null;
   }

@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (email === adminEmail && password === adminPassword) {
-      const token = generateToken(email);
+      const token = await generateToken(email);
       return NextResponse.json({
         success: true,
         token,
