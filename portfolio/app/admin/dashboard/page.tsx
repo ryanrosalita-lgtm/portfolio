@@ -1545,26 +1545,27 @@ export default function AdminDashboard() {
                   <div className="space-y-4">
                     {educations.map((education) => (
                       <div key={education.id} className="bg-white rounded-lg shadow p-4">
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <h3 className="font-bold text-gray-900">{education.institution}</h3>
-                            <p className="text-sm text-teal-600 mt-1">
-                              {education.degree}{education.specialization && ` in ${education.specialization}`}
+                        <div className="flex justify-between items-start gap-4">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-bold text-gray-900 break-words">{education.institution}</h3>
+                            <p className="text-sm text-teal-600 mt-1 break-words">
+                              {education.degree}
+                              {education.specialization && ` in ${education.specialization}`}
                             </p>
-                            <p className="text-xs text-gray-600 mt-2">
+                            <p className="text-xs text-gray-600 mt-2 font-semibold">
                               {education.startYear} - {education.endYear}
                             </p>
                           </div>
-                          <div className="flex gap-2">
+                          <div className="flex gap-2 flex-shrink-0">
                             <button
                               onClick={() => handleEditEducation(education)}
-                              className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+                              className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 whitespace-nowrap"
                             >
                               Edit
                             </button>
                             <button
                               onClick={() => handleDeleteEducation(education.id)}
-                              className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
+                              className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700 whitespace-nowrap"
                             >
                               Delete
                             </button>
