@@ -4,6 +4,13 @@ import portfolioData from '@/data/portfolio.json';
 import { authenticateRequest, unauthorizedResponse } from '@/lib/auth';
 import { devLog } from '@/lib/logger';
 
+// Helper function to add no-cache headers
+const noCacheHeaders = {
+  'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+  'Pragma': 'no-cache',
+  'Expires': '0',
+};
+
 export async function GET() {
   try {
     const [projectsRes, achievementsRes, skillsRes, languagesRes, educationsRes, coreSkillsRes, softSkillsRes] = await Promise.all([
@@ -44,6 +51,8 @@ export async function GET() {
         coreSkills: [],
         softSkills: [],
         source: 'fallback',
+      }, {
+        headers: noCacheHeaders,
       });
     }
 
@@ -56,6 +65,8 @@ export async function GET() {
       coreSkills: coreSkillsRes.data || [],
       softSkills: softSkillsRes.data || [],
       source: 'supabase',
+    }, {
+      headers: noCacheHeaders,
     });
   } catch (error) {
     devLog.error('Error fetching data:', error);
@@ -65,6 +76,8 @@ export async function GET() {
       achievements: portfolioData.achievements || [],
       skills: portfolioData.skills || [],
       source: 'fallback-error',
+    }, {
+      headers: noCacheHeaders,
     });
   }
 }

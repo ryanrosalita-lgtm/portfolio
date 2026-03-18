@@ -13,6 +13,13 @@ const DEFAULT_PROFILE = {
   image: null,
 };
 
+// Helper function to add no-cache headers
+const noCacheHeaders = {
+  'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+  'Pragma': 'no-cache',
+  'Expires': '0',
+};
+
 export async function GET() {
   try {
     const { data, error } = await supabaseAdmin
@@ -22,13 +29,19 @@ export async function GET() {
 
     if (error) {
       devLog.warn('Profile data not available from Supabase, using defaults:', error);
-      return NextResponse.json(DEFAULT_PROFILE);
+      return NextResponse.json(DEFAULT_PROFILE, {
+        headers: noCacheHeaders,
+      });
     }
 
-    return NextResponse.json(data);
+    return NextResponse.json(data, {
+      headers: noCacheHeaders,
+    });
   } catch (error) {
     devLog.warn('Error fetching profile, using defaults:', error);
-    return NextResponse.json(DEFAULT_PROFILE);
+    return NextResponse.json(DEFAULT_PROFILE, {
+      headers: noCacheHeaders,
+    });
   }
 }
 
@@ -60,6 +73,8 @@ export async function PUT(request: NextRequest) {
         success: true,
         data: { id: 1, name, title, bio, email, phone, location, image },
         source: 'local',
+      }, {
+        headers: noCacheHeaders,
       });
     }
 
@@ -67,6 +82,8 @@ export async function PUT(request: NextRequest) {
       success: true,
       data,
       source: 'supabase',
+    }, {
+      headers: noCacheHeaders,
     });
   } catch (error) {
     devLog.warn('Error updating profile:', error);
@@ -77,6 +94,8 @@ export async function PUT(request: NextRequest) {
       success: true,
       data: { id: 1, name, title, bio, email, phone, location, image },
       source: 'local-error',
+    }, {
+      headers: noCacheHeaders,
     });
   }
 }

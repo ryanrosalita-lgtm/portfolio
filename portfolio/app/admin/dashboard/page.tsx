@@ -93,9 +93,16 @@ export default function AdminDashboard() {
 
   const loadData = async () => {
     try {
+      const timestamp = new Date().getTime();
       const [portfolioRes, profileRes] = await Promise.all([
-        fetch('/api/portfolio', { credentials: 'include' }),
-        fetch('/api/admin/profile', { credentials: 'include' }),
+        fetch(`/api/portfolio?t=${timestamp}`, { 
+          credentials: 'include',
+          cache: 'no-store',
+        }),
+        fetch(`/api/admin/profile?t=${timestamp}`, { 
+          credentials: 'include',
+          cache: 'no-store',
+        }),
       ]);
 
       // Check if 401 (unauthorized) - redirect to login
