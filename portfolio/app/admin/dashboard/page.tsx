@@ -182,18 +182,22 @@ export default function AdminDashboard() {
       });
 
       const data = await response.json();
+      devLog.log('Upload response:', { status: response.status, ok: response.ok, data });
 
       if (response.ok && data.url) {
+        devLog.log('Setting project image URL:', data.url);
         setProjectForm({ ...projectForm, image: data.url });
-        alert('Project image uploaded successfully!');
+        alert('Project image uploaded successfully! Now click Update/Add Project to save.');
       } else if (response.status === 401) {
         alert('Session expired. Please login again.');
         router.push('/admin');
       } else {
-        alert(data.error || 'Upload failed');
+        devLog.error('Upload failed:', data);
+        alert(`Upload failed: ${data.error || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Upload error:', error);
+      devLog.error('Upload exception:', error);
       alert('Failed to upload project image');
     } finally {
       setUploading(false);
