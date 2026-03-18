@@ -84,6 +84,12 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { type, item } = body;
 
+    devLog.log('POST /api/portfolio - type:', type);
+    devLog.log('POST /api/portfolio - full item:', item);
+    if (type === 'project') {
+      devLog.log('Project image field:', item?.image);
+    }
+
     // Validate input
     if (!type || !item) {
       return NextResponse.json(
@@ -143,6 +149,8 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    devLog.log('Supabase insert result:', result?.data);
 
     // Fetch all data to return
     const [projectsRes, achievementsRes, skillsRes, languagesRes, educationsRes, coreSkillsRes, softSkillsRes] = await Promise.all([

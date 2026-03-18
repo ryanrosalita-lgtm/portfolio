@@ -243,24 +243,29 @@ export default function AdminDashboard() {
 
     try {
       const method = editingId ? 'PUT' : 'POST';
+      const payload = {
+        type: 'project',
+        id: editingId,
+        item: {
+          title: projectForm.title,
+          description: projectForm.description,
+          category: projectForm.category,
+          date: projectForm.date,
+          image: projectForm.image,
+          skills: projectForm.skills.split(',').map((s) => s.trim()),
+        },
+      };
+      
+      devLog.log('Sending project data:', payload);
+      devLog.log('Image field value:', projectForm.image);
+      
       const response = await fetch('/api/portfolio', {
         method: method,
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({
-          type: 'project',
-          id: editingId,
-          item: {
-            title: projectForm.title,
-            description: projectForm.description,
-            category: projectForm.category,
-            date: projectForm.date,
-            image: projectForm.image,
-            skills: projectForm.skills.split(',').map((s) => s.trim()),
-          },
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
