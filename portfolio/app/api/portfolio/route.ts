@@ -357,9 +357,11 @@ export async function DELETE(request: NextRequest) {
         coreSkills: coreSkillsRes.data || [],
         softSkills: softSkillsRes.data || [],
       },
+    }, {
+      headers: noCacheHeaders,
     });
   } catch (error) {
     devLog.error('Error:', error);
-    return NextResponse.json({ error: 'Failed to delete item' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to delete item' }, { status: 500, headers: noCacheHeaders });
   }
 }
