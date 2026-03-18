@@ -1408,6 +1408,7 @@ export default function AdminDashboard() {
                       <option>Programming</option>
                       <option>Database</option>
                       <option>Design</option>
+                      <option>Model</option>
                       <option>Other</option>
                     </select>
                   </div>
