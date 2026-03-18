@@ -287,7 +287,7 @@ export default function Home() {
             <div>
               <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-gray-900">Technical Skills</h2>
               <div className="space-y-6">
-                {['Programming', 'Database', 'Design'].map((category) => {
+                {['Programming', 'Database', 'Design', 'Model'].map((category) => {
                   const categorySkills = skills.filter(
                     (s) => s.category === category
                   );
