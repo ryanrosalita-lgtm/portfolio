@@ -58,20 +58,37 @@ export async function POST(request: NextRequest) {
     if (error) {
       devLog.error('Upload error:', error);
       return NextResponse.json(
-        { error: 'Failed to upload file' },
+        { error: 'Failed to upload file to storage' },
         { status: 500 }
       );
     }
+
+    devLog.log('File uploaded to storage:', { fileName, bucket, uploadData: data });
 
     // Get public URL
     const { data: publicData } = supabaseAdmin.storage
       .from(bucket)
       .getPublicUrl(fileName);
 
+    devLog.log('Public URL generated:', publicData);
+
+    if (!publicData?.publicUrl) {
+      devLog.error('Failed to get public URL');
+      return NextResponse.json(
+        { error: 'Failed to generate public URL' },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json({
       success: true,
       url: publicData.publicUrl,
       fileName,
+    }, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate',
+        'Pragma': 'no-cache',
+      },
     });
   } catch (error) {
     devLog.error('Upload error:', error);
