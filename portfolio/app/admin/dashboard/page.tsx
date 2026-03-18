@@ -1233,6 +1233,9 @@ export default function AdminDashboard() {
                           className="w-48 h-32 object-cover rounded-lg border border-gray-200"
                         />
                         <p className="text-xs text-gray-600 mt-2 break-all">Stored in Supabase Storage</p>
+                        <p className="text-xs text-gray-500 mt-1 p-2 bg-gray-100 rounded break-all font-mono">
+                          URL: {projectForm.image}
+                        </p>
                       </div>
                     )}
                   </div>
