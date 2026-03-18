@@ -2,18 +2,30 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken, extractTokenFromHeader } from './jwt';
 
 /**
- * Middleware to verify JWT token from Authorization header
+ * Middleware to verify JWT token from cookie or Authorization header
+ * Priority: Cookie > Authorization header
  * Returns the decoded token if valid, otherwise returns null
  */
 export async function authenticateRequest(request: NextRequest): Promise<{ email: string } | null> {
-  const authHeader = request.headers.get('Authorization');
-  const token = extractTokenFromHeader(authHeader);
+  // Try to get token from httpOnly cookie first (secure)
+  const cookieToken = request.cookies.get('authToken')?.value;
+  
+  if (cookieToken) {
+    const payload = await verifyToken(cookieToken);
+    if (payload) {
+      return { email: payload.email };
+    }
+  }
 
-  if (!token) {
+  // Fallback to Authorization header (for API clients)
+  const authHeader = request.headers.get('Authorization');
+  const headerToken = extractTokenFromHeader(authHeader);
+
+  if (!headerToken) {
     return null;
   }
 
-  const payload = await verifyToken(token);
+  const payload = await verifyToken(headerToken);
   if (!payload) {
     return null;
   }
@@ -34,3 +46,4 @@ export function unauthorizedResponse() {
 export function forbiddenResponse() {
   return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 }
+

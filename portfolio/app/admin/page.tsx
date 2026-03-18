@@ -27,12 +27,14 @@ export default function AdminLogin() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
+        credentials: 'include', // Important: Include cookies in request
       });
 
       const data = await response.json();
 
-      if (response.ok && data.token) {
-        localStorage.setItem('authToken', data.token);
+      if (response.ok && data.success) {
+        // Token is now in httpOnly cookie, automatically sent with requests
+        // No need to store in localStorage
         router.push('/admin/dashboard');
       } else {
         setError(data.error || 'Login failed');
