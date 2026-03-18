@@ -2,6 +2,7 @@ import { supabaseAdmin } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
 import portfolioData from '@/data/portfolio.json';
 import { authenticateRequest, unauthorizedResponse } from '@/lib/auth';
+import { devLog } from '@/lib/logger';
 
 export async function GET() {
   try {
@@ -17,22 +18,22 @@ export async function GET() {
 
     // Debug logging
     if (educationsRes.data) {
-      console.log('Supabase educations data:', educationsRes.data);
+      devLog.log('Supabase educations data:', educationsRes.data);
     }
     if (educationsRes.error) {
-      console.error('Supabase educations error:', educationsRes.error);
+      devLog.error('Supabase educations error:', educationsRes.error);
     }
 
     // If Supabase fails, fallback to local JSON data
     if (projectsRes.error || achievementsRes.error || skillsRes.error || languagesRes.error || educationsRes.error || coreSkillsRes.error || softSkillsRes.error) {
-      console.warn('Supabase connection failed, using fallback data');
-      console.error('Projects error:', projectsRes.error);
-      console.error('Achievements error:', achievementsRes.error);
-      console.error('Skills error:', skillsRes.error);
-      console.error('Languages error:', languagesRes.error);
-      console.error('Educations error:', educationsRes.error);
-      console.error('Core skills error:', coreSkillsRes.error);
-      console.error('Soft skills error:', softSkillsRes.error);
+      devLog.warn('Supabase connection failed, using fallback data');
+      devLog.error('Projects error:', projectsRes.error);
+      devLog.error('Achievements error:', achievementsRes.error);
+      devLog.error('Skills error:', skillsRes.error);
+      devLog.error('Languages error:', languagesRes.error);
+      devLog.error('Educations error:', educationsRes.error);
+      devLog.error('Core skills error:', coreSkillsRes.error);
+      devLog.error('Soft skills error:', softSkillsRes.error);
       
       return NextResponse.json({
         projects: portfolioData.projects || [],
@@ -57,7 +58,7 @@ export async function GET() {
       source: 'supabase',
     });
   } catch (error) {
-    console.error('Error fetching data:', error);
+    devLog.error('Error fetching data:', error);
     // Fallback to local data on any error
     return NextResponse.json({
       projects: portfolioData.projects || [],
@@ -132,7 +133,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (result?.error) {
-      console.error('Supabase insert error:', result.error);
+      devLog.error('Supabase insert error:', result.error);
       return NextResponse.json(
         { error: `Database error: ${result.error.message}` },
         { status: 400 }
@@ -163,7 +164,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error: any) {
-    console.error('Error creating item:', error);
+    devLog.error('Error creating item:', error);
     return NextResponse.json(
       { error: error?.message || 'Failed to create item' },
       { status: 500 }
@@ -269,7 +270,7 @@ export async function PUT(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error:', error);
+    devLog.error('Error:', error);
     return NextResponse.json({ error: 'Failed to update item' }, { status: 500 });
   }
 }
@@ -345,7 +346,7 @@ export async function DELETE(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error:', error);
+    devLog.error('Error:', error);
     return NextResponse.json({ error: 'Failed to delete item' }, { status: 500 });
   }
 }

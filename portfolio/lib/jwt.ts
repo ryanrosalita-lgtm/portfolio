@@ -1,7 +1,6 @@
 import { jwtVerify, SignJWT } from 'jose';
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'vc5cRT5EzhtfZJ/NTkPkYj0MrFPmMBpBUqSthUOgwDY=');
-const JWT_EXPIRY = 86400; // 24 hours in seconds
 
 export interface JWTPayload {
   email: string;

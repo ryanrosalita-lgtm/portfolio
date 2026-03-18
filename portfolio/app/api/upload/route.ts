@@ -1,6 +1,13 @@
 import { supabaseAdmin } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
 import { authenticateRequest, unauthorizedResponse } from '@/lib/auth';
+import {
+  MAX_FILE_SIZE,
+  ALLOWED_IMAGE_TYPES,
+  INVALID_FILE_TYPE_MESSAGE,
+  FILE_TOO_LARGE_MESSAGE,
+} from '@/lib/constants';
+import { devLog } from '@/lib/logger';
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,18 +29,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-    if (!allowedTypes.includes(file.type)) {
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
       return NextResponse.json(
-        { error: 'Invalid file type. Only images allowed.' },
+        { error: INVALID_FILE_TYPE_MESSAGE },
         { status: 400 }
       );
     }
 
     // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
+    if (file.size > MAX_FILE_SIZE) {
       return NextResponse.json(
-        { error: 'File too large. Max 5MB allowed.' },
+        { error: FILE_TOO_LARGE_MESSAGE },
         { status: 400 }
       );
     }
@@ -50,7 +56,7 @@ export async function POST(request: NextRequest) {
       });
 
     if (error) {
-      console.error('Upload error:', error);
+      devLog.error('Upload error:', error);
       return NextResponse.json(
         { error: 'Failed to upload file' },
         { status: 500 }
@@ -68,7 +74,7 @@ export async function POST(request: NextRequest) {
       fileName,
     });
   } catch (error) {
-    console.error('Upload error:', error);
+    devLog.error('Upload error:', error);
     return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
   }
 }

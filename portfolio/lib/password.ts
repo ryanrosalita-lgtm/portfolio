@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs';
+import { BCRYPT_SALT_ROUNDS } from './constants';
 
 /**
  * Hash a password using bcryptjs
@@ -6,7 +7,7 @@ import bcrypt from 'bcryptjs';
  * @returns Promise<string> - Hashed password
  */
 export async function hashPassword(password: string): Promise<string> {
-  const salt = await bcrypt.genSalt(10);
+  const salt = await bcrypt.genSalt(BCRYPT_SALT_ROUNDS);
   return bcrypt.hash(password, salt);
 }
 
@@ -23,11 +24,4 @@ export async function comparePasswords(
   return bcrypt.compare(password, hashedPassword);
 }
 
-/**
- * Generate a password hash for use in environment variables
- * Use this function to generate hashes for your admin password
- * Then set ADMIN_PASSWORD_HASH in .env
- */
-export async function generatePasswordHash(password: string): Promise<string> {
-  return hashPassword(password);
-}
+

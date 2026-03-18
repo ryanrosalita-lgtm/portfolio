@@ -40,10 +40,4 @@ export function unauthorizedResponse() {
   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 }
 
-/**
- * Helper to return 403 Forbidden response
- */
-export function forbiddenResponse() {
-  return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-}
 

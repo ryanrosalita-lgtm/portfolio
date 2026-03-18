@@ -1,5 +1,6 @@
 import { supabaseAdmin } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
+import { devLog } from '@/lib/logger';
 
 const DEFAULT_PROFILE = {
   id: 1,
@@ -20,13 +21,13 @@ export async function GET() {
       .single();
 
     if (error) {
-      console.warn('Profile data not available from Supabase, using defaults:', error);
+      devLog.warn('Profile data not available from Supabase, using defaults:', error);
       return NextResponse.json(DEFAULT_PROFILE);
     }
 
     return NextResponse.json(data);
   } catch (error) {
-    console.warn('Error fetching profile, using defaults:', error);
+    devLog.warn('Error fetching profile, using defaults:', error);
     return NextResponse.json(DEFAULT_PROFILE);
   }
 }
@@ -53,7 +54,7 @@ export async function PUT(request: NextRequest) {
       .single();
 
     if (error) {
-      console.warn('Failed to update profile in Supabase:', error);
+      devLog.warn('Failed to update profile in Supabase:', error);
       // Return success with updated data even if Supabase fails (optimistic update)
       return NextResponse.json({
         success: true,
@@ -68,7 +69,7 @@ export async function PUT(request: NextRequest) {
       source: 'supabase',
     });
   } catch (error) {
-    console.warn('Error updating profile:', error);
+    devLog.warn('Error updating profile:', error);
     // Return success with updated data on any error (optimistic update)
     const body = await request.json();
     const { name, title, bio, email, phone, location, image } = body;

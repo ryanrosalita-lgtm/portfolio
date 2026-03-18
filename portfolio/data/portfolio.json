@@ -134,6 +134,38 @@
       "startYear": "2013",
       "endYear": "2018"
     }
+  ],
+  "coreSkills": [
+    {
+      "id": 1,
+      "skill": "Project Management"
+    },
+    {
+      "id": 2,
+      "skill": "UI/UX Design"
+    },
+    {
+      "id": 3,
+      "skill": "Brand Strategy"
+    }
+  ],
+  "softSkills": [
+    {
+      "id": 1,
+      "skill": "Communication"
+    },
+    {
+      "id": 2,
+      "skill": "Team Collaboration"
+    },
+    {
+      "id": 3,
+      "skill": "Problem Solving"
+    },
+    {
+      "id": 4,
+      "skill": "Adaptability"
+    }
   ]
 }
 

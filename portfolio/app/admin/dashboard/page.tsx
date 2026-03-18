@@ -2,62 +2,18 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-
-interface Project {
-  id: number;
-  title: string;
-  description: string;
-  category: string;
-  date: string;
-  image?: string;
-  skills: string[];
-}
-
-interface Achievement {
-  id: number;
-  title: string;
-  description: string;
-  date: string;
-  type: string;
-  issuer: string;
-}
-
-interface Skill {
-  id: number;
-  name: string;
-  category: string;
-  level: number;
-  logo: string;
-}
-
-interface Language {
-  id: number;
-  name: string;
-  proficiency: string;
-}
-
-interface Education {
-  id: number;
-  institution: string;
-  degree: string;
-  specialization: string;
-  startYear: string;
-  endYear: string;
-}
-
-interface CoreSkill {
-  id: number;
-  skill: string;
-  created_at?: string;
-  updated_at?: string;
-}
-
-interface SoftSkill {
-  id: number;
-  skill: string;
-  created_at?: string;
-  updated_at?: string;
-}
+import {
+  Project,
+  Achievement,
+  Skill,
+  Language,
+  Education,
+  CoreSkill,
+  SoftSkill,
+  Profile,
+} from '@/lib/types';
+import { devLog } from '@/lib/logger';
+import { handleAuthError } from '@/lib/error-handler';
 
 export default function AdminDashboard() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -151,8 +107,8 @@ export default function AdminDashboard() {
       const portfolioData = await portfolioRes.json();
       const profileData = await profileRes.json();
 
-      console.log('Admin - API Response - Educations:', portfolioData.educations);
-      console.log('Admin - Data source:', portfolioData.source);
+      devLog.log('Admin - API Response - Educations:', portfolioData.educations);
+      devLog.log('Admin - Data source:', portfolioData.source);
 
       setProjects(portfolioData.projects);
       setAchievements(portfolioData.achievements);
