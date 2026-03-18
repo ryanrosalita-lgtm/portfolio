@@ -31,31 +31,7 @@ export async function GET() {
       devLog.error('Supabase educations error:', educationsRes.error);
     }
 
-    // If Supabase fails, fallback to local JSON data
-    if (projectsRes.error || achievementsRes.error || skillsRes.error || languagesRes.error || educationsRes.error || coreSkillsRes.error || softSkillsRes.error) {
-      devLog.warn('Supabase connection failed, using fallback data');
-      devLog.error('Projects error:', projectsRes.error);
-      devLog.error('Achievements error:', achievementsRes.error);
-      devLog.error('Skills error:', skillsRes.error);
-      devLog.error('Languages error:', languagesRes.error);
-      devLog.error('Educations error:', educationsRes.error);
-      devLog.error('Core skills error:', coreSkillsRes.error);
-      devLog.error('Soft skills error:', softSkillsRes.error);
-      
-      return NextResponse.json({
-        projects: portfolioData.projects || [],
-        achievements: portfolioData.achievements || [],
-        skills: portfolioData.skills || [],
-        languages: [],
-        educations: [],
-        coreSkills: [],
-        softSkills: [],
-        source: 'fallback',
-      }, {
-        headers: noCacheHeaders,
-      });
-    }
-
+    // Always return Supabase data (even if empty) - admin should manage data in Supabase
     return NextResponse.json({
       projects: projectsRes.data || [],
       achievements: achievementsRes.data || [],
@@ -65,19 +41,34 @@ export async function GET() {
       coreSkills: coreSkillsRes.data || [],
       softSkills: softSkillsRes.data || [],
       source: 'supabase',
+      errors: {
+        projects: projectsRes.error ? projectsRes.error.message : null,
+        achievements: achievementsRes.error ? achievementsRes.error.message : null,
+        skills: skillsRes.error ? skillsRes.error.message : null,
+        languages: languagesRes.error ? languagesRes.error.message : null,
+        educations: educationsRes.error ? educationsRes.error.message : null,
+        coreSkills: coreSkillsRes.error ? coreSkillsRes.error.message : null,
+        softSkills: softSkillsRes.error ? softSkillsRes.error.message : null,
+      },
     }, {
       headers: noCacheHeaders,
     });
   } catch (error) {
     devLog.error('Error fetching data:', error);
-    // Fallback to local data on any error
+    // Return empty data on error - don't use fallback
     return NextResponse.json({
-      projects: portfolioData.projects || [],
-      achievements: portfolioData.achievements || [],
-      skills: portfolioData.skills || [],
-      source: 'fallback-error',
+      projects: [],
+      achievements: [],
+      skills: [],
+      languages: [],
+      educations: [],
+      coreSkills: [],
+      softSkills: [],
+      source: 'error',
+      error: error instanceof Error ? error.message : 'Unknown error',
     }, {
       headers: noCacheHeaders,
+      status: 500,
     });
   }
 }
